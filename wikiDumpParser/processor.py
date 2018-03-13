@@ -359,6 +359,8 @@ class CycleFile(object):
         self.file.close()
 
 
+# Splitting large XML files into smaller files, based on element is based on
+# https://gist.github.com/nicwolff/b4da6ec84ba9c23c8e59
 class XMLBreaker(XMLGenerator):
     def __init__(self, break_into=None, break_after=1000, out=None, *args, **kwargs):
         XMLGenerator.__init__(self, out, encoding='utf-8', *args, **kwargs)

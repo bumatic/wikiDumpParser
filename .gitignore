@@ -3,6 +3,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+project/
+dumpTEST.py
+../.DS_Store
+.DS_Store
+.idea/
+wikiDumpParser/.DS_Store
+
 # C extensions
 *.so
 
@@ -99,3 +106,5 @@ ENV/
 
 # mypy
 .mypy_cache/
+wikiDumpParser/.DS_Store
+wikiDumpParser/.DS_Store
