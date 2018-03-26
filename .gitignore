@@ -4,11 +4,14 @@ __pycache__/
 *$py.class
 
 project/
-dumpTEST.py
+dumpProcessing.py
+project/
+enwiki-20180301_dump_list.csv
 ../.DS_Store
 .DS_Store
 .idea/
 wikiDumpParser/.DS_Store
+
 
 # C extensions
 *.so

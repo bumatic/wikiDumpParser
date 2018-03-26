@@ -2,6 +2,7 @@ import os
 import json
 import pandas as pd
 from dateutil import parser
+from datetime import datetime
 from wikiDumpParser.processor import *
 from joblib import Parallel, delayed
 
@@ -45,24 +46,80 @@ class Project:
         self.pinfo['start_date'] = parser.parse(date)
         self.save_project()
 
+    def get_start_date(self):
+        if 'start_date' in self.pinfo.keys():
+            return datetime.fromtimestamp(self.pinfo['start_date']).strftime('%Y-%m-%d')
+        else:
+            print('No start date has been set')
+            return None
+
     def set_dump_date(self, date):
         self.pinfo['dump_date'] = parser.parse(date)
         self.save_project()
 
+    def get_dump_date(self):
+        if 'dump_date' in self.pinfo.keys():
+            return datetime.fromtimestamp(self.pinfo['dump_date']).strftime('%Y-%m-%d')
+        else:
+            print('No dump date has been set.')
+            return None
+
     def set_parallel_processes(self, number):
         assert type(number) is int, "Number of parallel processes is not an integer."
         self.pinfo['parallel_processes'] = number
+
+    def get_parallel_processes(self):
+        if 'parallel_processes' in self.pinfo.keys():
+            return self.pinfo['parallel_processes']
+        else:
+            print('No number of parallel processes has been set.')
+            return None
 
     def add_dump_file_info(self, file_list, base_url):
         self.pinfo['base_url'] = base_url
         file_list = pd.read_csv(file_list, header=None, delimiter='\t', names=['name'])
         if 'dump' not in self.pinfo.keys():
             self.pinfo['dump'] = {}
-            for file in file_list.iterrows():
-                self.pinfo['dump'][file[1]['name']] = 'init'
+            for f in file_list.iterrows():
+                self.pinfo['dump'][f[1]['name']] = 'init'
             self.save_project()
         else:
             print('Dump list has already been added to project.')
+
+    def get_processing_status(self):
+        if 'dump' in self.pinfo.keys():
+            total = 0
+            init = 0
+            downloaded = 0
+            split = 0
+            parsed = 0
+            post = 0
+            done = 0
+            for item, value in self.pinfo['dump'].items():
+                total += 1
+                if value == 'init':
+                    init += 1
+                elif value == 'downloaded':
+                    downloaded += 1
+                elif value == 'split':
+                    split += 1
+                elif value == 'parsed':
+                    parsed += 1
+                elif value == 'post':
+                    post += 1
+                elif value == 'done':
+                    done += 1
+            print('Total number of files to process: '+str(total))
+            print('Number of files done: ' + str(done))
+            print('Number of files post-processed: ' + str(post))
+            print('Number of files parsed: ' + str(parsed))
+            print('Number of files split: ' + str(split))
+            print('Number of files downloaded: ' + str(downloaded))
+            print('Number of files not yet started: ' + str(init))
+        else:
+            print("No dump files have been added yet for processing.")
+            return
+
 
     def process(self):
         process_order = ['done',
@@ -78,12 +135,12 @@ class Project:
 
         else:
             for step in process_order:
-                Parallel(n_jobs=self.pinfo['parallel_processes'])(delayed(self.process_file)(file, status, step)
-                                   for file, status in self.pinfo['dump'].items())
+                Parallel(n_jobs=self.pinfo['parallel_processes'])(delayed(self.process_file)(f, status, step)
+                                   for f, status in self.pinfo['dump'].items())
 
-    def process_file(self, file, status, step):
+    def process_file(self, f, status, step):
         while status != 'post':
-            print('Call next Processor for ' + status + ' file: ' + file)
-            status = Processor(file, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date']).process()
-            self.pinfo['dump'][file] = status
+            print('Call next Processor for ' + status + ' file: ' + f)
+            status = Processor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date']).process()
+            self.pinfo['dump'][f] = status
             self.save_project()

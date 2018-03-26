@@ -214,6 +214,7 @@ class Processor:
         try:
             if re.search(r"\[\[Category\:(.*?)\]\]", text):
                 cats = re.findall(r"\[\[Category\:(.*?)\]\]", text)
+                cats = ['Category:'+x for x in cats]
             else:
                 cats = []
         except:
