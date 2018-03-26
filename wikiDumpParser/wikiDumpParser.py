@@ -67,6 +67,7 @@ class Project:
     def set_parallel_processes(self, number):
         assert type(number) is int, "Number of parallel processes is not an integer."
         self.pinfo['parallel_processes'] = number
+        self.save_project()
 
     def get_parallel_processes(self):
         if 'parallel_processes' in self.pinfo.keys():
