@@ -4,9 +4,7 @@ __pycache__/
 *$py.class
 
 project/
-dumpProcessing.py
 project/
-enwiki-20180301_dump_list.csv
 ../.DS_Store
 .DS_Store
 .idea/
