@@ -78,11 +78,14 @@ class Project:
 
     def add_dump_file_info(self, file_list, base_url):
         self.pinfo['base_url'] = base_url
-        file_list = pd.read_csv(file_list, header=None, delimiter='\t', names=['name'])
+        file_list = pd.read_csv(file_list, header=None, delimiter='  ', names=['md5', 'name'])
         if 'dump' not in self.pinfo.keys():
             self.pinfo['dump'] = {}
+            self.pinfo['md5'] = {}
+
             for f in file_list.iterrows():
                 self.pinfo['dump'][f[1]['name']] = 'init'
+                self.pinfo['md5'][f[1]['name']] = f[1]['md5']
             self.save_project()
         else:
             print('Dump list has already been added to project.')
@@ -122,6 +125,22 @@ class Project:
             return
 
 
+    '''
+    def download_all_first(self):
+        if 'dump' not in self.pinfo.keys():
+            print('No dump file info has been added to the project yet – use: '
+                  'Project.add_dump_file_info(self, file_list, base_url)')
+        else: 
+            for f, status in self.pinfo['dump'].items():
+                if status == 'init':
+                    status = Processor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date']).process()
+                    self.pinfo['dump'][f] = status
+                    self.save_project()
+                    #self.process_file(f, status, 'init')
+                    print(self.get_processing_status())
+    '''
+
+
     def process(self):
         process_order = ['done',
                          'post',
@@ -142,6 +161,7 @@ class Project:
     def process_file(self, f, status, step):
         while status != 'post':
             print('Call next Processor for ' + status + ' file: ' + f)
-            status = Processor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date']).process()
+            status = Processor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date'],
+                               self.pinfo['md5'][f]).process()
             self.pinfo['dump'][f] = status
             self.save_project()

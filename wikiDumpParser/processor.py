@@ -13,10 +13,13 @@ import glob
 import subprocess
 from dateutil import parser
 import pandas as pd
+import hashlib
+import random
+import time
 
 
 class Processor:
-    def __init__(self, file_name, data_path, base_url, status, start_date):
+    def __init__(self, file_name, data_path, base_url, status, start_date, md5):
         self.file_name = file_name
         self.data_path_base = data_path
         self.data_path = os.path.join(self.data_path_base, os.path.splitext(self.file_name)[0])
@@ -25,12 +28,18 @@ class Processor:
         self.base_url = base_url
         self.status = status
         self.start_date = start_date
+        self.md5 = md5
 
     def process(self):
         if self.status == 'init':
             success = self.download_dump_file()
             if success:
                 new_status = 'downloaded'
+                return new_status
+            else:
+                new_status = 'init'
+                print('Download error. Waiting 60 to 120 seconds to restart.')
+                time.sleep(random.randint(60, 120))
                 return new_status
         if self.status == 'downloaded':
             # ONCE IMPLEMENTE NEW_STATUS NEEDS TO BE SET TO NEXT.
@@ -56,11 +65,24 @@ class Processor:
 
     @retry(wait_random_min=1000, wait_random_max=20000, stop_max_attempt_number=20)
     def download_dump_file(self):
+        x = random.randint(1, 120)
+        time.sleep(x)
         response = requests.get(self.base_url + self.file_name, stream=True)
         with open(os.path.join(self.data_path, self.file_name), "wb") as handle:
-            for data in tqdm(response.iter_content(chunk_size=32768)):
+            for data in response.iter_content(chunk_size=32768):
                 handle.write(data)
-        return True
+        new_md5 = self.get_md5(os.path.join(self.data_path, self.file_name))
+        if new_md5 == self.md5:
+            return True
+        else:
+            os.remove(os.path.join(self.data_path, self.file_name))
+
+    def get_md5(self, fname):
+        hash_md5 = hashlib.md5()
+        with open(fname, "rb") as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hash_md5.update(chunk)
+        return hash_md5.hexdigest()
 
     def unpack(self):
         Archive(os.path.join(self.data_path, self.file_name)).extractall(os.path.join(os.getcwd(), self.data_path))
