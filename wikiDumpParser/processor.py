@@ -141,7 +141,7 @@ class Processor:
                 if not os.path.isdir(too_large):
                     os.makedirs(too_large)
                 #print(os.path.split(file[1]))
-                subprocess.call(['7z', 'a', file + '.7z', file])
+                subprocess.call(['7z', 'a', os.path.join(os.getcwd(), file + '.7z'), os.path.join(os.getcwd(), file)])
                 shutil.copy2(file+'.7z', too_large)
                 os.remove(file)
                 os.remove(file+'.7z')
@@ -265,8 +265,17 @@ class Processor:
         #print('start postprocessing relevant revisions')
         relevant_revisions = self.assemble_list_of_relevant_revisions(cat_results_file, link_results_file)
         relevant_revisions.to_csv(relevant_revisions_file, sep='\t', index=False, header=False, mode='a')
+<<<<<<< HEAD
+        #print('COMPRESS CAT RESULTS')
+        subprocess.call(['7z', 'a', os.path.join(os.getcwd(), cat_results_file + '.7z'),
+                         os.path.join(os.getcwd(), cat_results_file)])
+        #print('COMPRESS LINK RESULTS')
+        subprocess.call(['7z', 'a', os.path.join(os.getcwd(), link_results_file + '.7z'),
+                         os.path.join(os.getcwd(), link_results_file)])
+=======
         subprocess.call(['7z', 'a', cat_results_file + '.7z', cat_results_file])
         subprocess.call(['7z', 'a', link_results_file + '.7z', link_results_file])
+>>>>>>> parent of 4084735... added test
         os.remove(cat_results_file)
         os.remove(link_results_file)
         return True
