@@ -272,8 +272,11 @@ class Processor:
         except:
             pass
         #print('start postprocessing relevant revisions')
-        relevant_revisions = self.assemble_list_of_relevant_revisions(cat_results_file, link_results_file)
-        relevant_revisions.to_csv(relevant_revisions_file, sep='\t', index=False, header=False, mode='a')
+        try:
+            relevant_revisions = self.assemble_list_of_relevant_revisions(cat_results_file, link_results_file)
+            relevant_revisions.to_csv(relevant_revisions_file, sep='\t', index=False, header=False, mode='a')
+        except:
+            pass
         #print('COMPRESS CAT RESULTS')
 
         try:
