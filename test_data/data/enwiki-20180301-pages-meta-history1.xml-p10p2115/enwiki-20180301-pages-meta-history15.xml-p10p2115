@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.10/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.10/ http://www.mediawiki.org/xml/export-0.10.xsd" version="0.10" xml:lang="en">
+  <page>
+    <title>AfghanistanPeople</title>
+    <ns>0</ns>
+    <id>15</id>
+    <redirect title="Demographics of Afghanistan"></redirect>
+    <revision>
+      <id>133439</id>
+      <parentid>233200</parentid>
+      <timestamp>2002-02-25T15:43:11Z</timestamp>
+      <contributor>
+        <username>Conversion script</username>
+        <id>0</id>
+      </contributor>
+      <minor></minor>
+      <comment>Automated conversion</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Afghanistan/People]]
+</text>
+      <sha1>l7ofhwqevmxsv6n2vl5namfcvv4ym15</sha1>
+    </revision>
+    <revision>
+      <id>166547</id>
+      <parentid>133439</parentid>
+      <timestamp>2002-08-01T05:36:52Z</timestamp>
+      <contributor>
+        <username>Koyaanis Qatsi</username>
+        <id>90</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Demography of Afghanistan]]</text>
+      <sha1>8yrdnkfht56fpix77d75z7tg53rn7ri</sha1>
+    </revision>
+    <revision>
+      <id>233200</id>
+      <timestamp>2001-01-21T23:01:07Z</timestamp>
+      <contributor>
+        <username>LinusTolke</username>
+        <id>32609824</id>
+      </contributor>
+      <comment>*</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">Population: 25,838,797 (July 2000 est.) 
+
+
+
+Age structure: 
+
+0-14 years: 42.37% (male 5,598,403; female 5,371,054) 
+
+15-64 years: 54.86% (male 7,362,961; female 6,839,914) 
+
+65 years and over: 2.77% (male 378,741; female 337,724) (2000 est.) 
+
+
+
+Population growth rate: 3.54% (2000 est.) 
+
+note: this rate reflects the continued return of refugees from Iran 
+
+
+
+Birth rate: 41.82 births/1,000 population (2000 est.) 
+
+
+
+Death rate: 18.01 deaths/1,000 population (2000 est.) 
+
+
+
+Net migration rate: 11.54 migrant(s)/1,000 population (2000 est.) 
+
+
+
+Sex ratio: 
+
+at birth: 1.05 male(s)/female 
+
+under 15 years: 1.04 male(s)/female 
+
+15-64 years: 1.08 male(s)/female 
+
+65 years and over: 1.12 male(s)/female 
+
+total population: 1.06 male(s)/female (2000 est.) 
+
+
+
+Infant mortality rate: 149.28 deaths/1,000 live births (2000 est.) 
+
+
+
+Life expectancy at birth: 
+
+total population: 45.88 years 
+
+male: 46.62 years 
+
+female: 45.1 years (2000 est.) 
+
+
+
+Total fertility rate: 5.87 children born/woman (2000 est.) 
+
+
+
+Nationality: 
+
+noun: Afghan(s) 
+
+adjective: Afghan 
+
+
+
+Ethnic groups: Pashtun 38%, Tajik 25%, Uzbek 6%, Hazara 19%, minor ethnic groups (Aimaks, Turkmen, Baloch, and others) 
+
+
+
+Religions: Sunni Muslim 84%, Shi'a Muslim 15%, other 1% 
+
+
+
+Languages: Pashtu 35%, Afghan Persian (Dari) 50%, Turkic languages (primarily Uzbek and Turkmen) 11%, 30 minor languages (primarily Balochi and Pashai) 4%, much
+
+bilingualism 
+
+
+
+Literacy: 
+
+definition: age 15 and over can read and write 
+
+total population: 31.5% 
+
+male: 47.2% 
+
+female: 15% (1999 est.)
+
+</text>
+      <sha1>lbz49utust81r78fu0zak3umnzaczwh</sha1>
+    </revision>
+    <revision>
+      <id>15898950</id>
+      <parentid>166547</parentid>
+      <timestamp>2002-08-21T10:42:35Z</timestamp>
+      <contributor>
+        <username>-- April</username>
+        <id>166</id>
+      </contributor>
+      <minor></minor>
+      <comment>fix link</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Demographics of Afghanistan]]</text>
+      <sha1>j5sxitcr5tehqchr16lc0hykdv1t7y0</sha1>
+    </revision>
+    <revision>
+      <id>74466558</id>
+      <parentid>15898950</parentid>
+      <timestamp>2006-09-08T04:15:11Z</timestamp>
+      <contributor>
+        <username>Rory096</username>
+        <id>750223</id>
+      </contributor>
+      <comment>cat rd</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Demographics of Afghanistan]] {{R from CamelCase}}</text>
+      <sha1>em7my23894czbu7ksvulil0g8l6pcrc</sha1>
+    </revision>
+    <revision>
+      <id>135089040</id>
+      <parentid>74466558</parentid>
+      <timestamp>2007-06-01T13:59:37Z</timestamp>
+      <contributor>
+        <username>RussBot</username>
+        <id>279219</id>
+      </contributor>
+      <minor></minor>
+      <comment>Robot: Fixing [[Special:DoubleRedirects|double-redirect]] -"Demographics of Afghanistan" +"Demography of Afghanistan"</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Demography of Afghanistan]] {{R from CamelCase}}</text>
+      <sha1>744dgrl7ef5p53yffn2a989ly1dyr8f</sha1>
+    </revision>
+    <revision>
+      <id>616420354</id>
+      <parentid>135089040</parentid>
+      <timestamp>2014-07-10T19:18:43Z</timestamp>
+      <contributor>
+        <username>RussBot</username>
+        <id>279219</id>
+      </contributor>
+      <minor></minor>
+      <comment>Robot: Fixing double redirect to [[Demographics of Afghanistan]]</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Demographics of Afghanistan]] {{R from CamelCase}}</text>
+      <sha1>em7my23894czbu7ksvulil0g8l6pcrc</sha1>
+    </revision>
+    <revision>
+      <id>783865293</id>
+      <parentid>616420354</parentid>
+      <timestamp>2017-06-05T04:19:42Z</timestamp>
+      <contributor>
+        <username>Tom.Reding</username>
+        <id>9784415</id>
+      </contributor>
+      <minor></minor>
+      <comment>+{{Redirect category shell}} using [[Project:AWB|AWB]]</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Demographics of Afghanistan]]
+
+{{Redirect category shell|1=
+{{R from CamelCase}}
+}}</text>
+      <sha1>fncm9bh9l25bmvyzq21zopijbuqq3nd</sha1>
+    </revision>
+  </page>
+</mediawiki>

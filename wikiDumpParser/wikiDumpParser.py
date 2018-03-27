@@ -9,8 +9,8 @@ from joblib import Parallel, delayed
 
 
 class Project:
-    def __init__(self):
-        self.path = 'project'
+    def __init__(self, path='project'):
+        self.path = path
         self.data_path = os.path.join(self.path, 'data')
         self.pinfo = {}
         self.pinfo_file = os.path.join(self.path, '_project_info.json')

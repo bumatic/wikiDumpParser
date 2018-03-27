@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.10/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.10/ http://www.mediawiki.org/xml/export-0.10.xsd" version="0.10" xml:lang="en">
+  <page>
+    <title>AfghanistanGeography</title>
+    <ns>0</ns>
+    <id>14</id>
+    <redirect title="Geography of Afghanistan"></redirect>
+    <revision>
+      <id>233198</id>
+      <timestamp>2001-01-21T23:00:32Z</timestamp>
+      <contributor>
+        <username>LinusTolke</username>
+        <id>32609824</id>
+      </contributor>
+      <comment>*</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">Location: Southern Asia, north and west of Pakistan, east of Iran 
+
+
+
+Geographic coordinates: 33 00 N, 65 00 E 
+
+
+
+Map references: Asia 
+
+
+
+Area: 
+
+total: 652,000 sq km 
+
+land: 652,000 sq km 
+
+water: 0 sq km 
+
+
+
+Area - comparative: slightly smaller than Texas 
+
+
+
+Land boundaries: 
+
+total: 5,529 km 
+
+border countries: China 76 km, Iran 936 km, Pakistan 2,430 km, Tajikistan 1,206 km, Turkmenistan 744 km, Uzbekistan 137 km 
+
+
+
+Coastline: 0 km (landlocked) 
+
+
+
+Maritime claims: none (landlocked) 
+
+
+
+Climate: arid to semiarid; cold winters and hot summers 
+
+
+
+Terrain: mostly rugged mountains; plains in north and southwest 
+
+
+
+Elevation extremes: 
+
+lowest point: Amu Darya 258 m 
+
+highest point: Nowshak 7,485 m 
+
+
+
+Natural resources: natural gas, petroleum, coal, copper, chromite, talc, barites, sulfur, lead, zinc, iron ore, salt, precious and semiprecious stones 
+
+
+
+Land use: 
+
+arable land: 12% 
+
+permanent crops: 0% 
+
+permanent pastures: 46% 
+
+forests and woodland: 3% 
+
+other: 39% (1993 est.) 
+
+
+
+Irrigated land: 30,000 sq km (1993 est.) 
+
+
+
+Natural hazards: damaging earthquakes occur in Hindu Kush mountains; flooding 
+
+
+
+Environment - current issues: soil degradation; overgrazing; deforestation (much of the remaining forests are being cut down for fuel and building materials);
+
+desertification 
+
+
+
+Environment - international agreements: 
+
+party to: Desertification, Endangered Species, Environmental Modification, Marine Dumping, Nuclear Test Ban 
+
+signed, but not ratified: Biodiversity, Climate Change, Hazardous Wastes, Law of the Sea, Marine Life Conservation 
+
+
+
+Geography - note: landlocked
+
+</text>
+      <sha1>gbgp40xyf1evutj2bcq1zc60bfyf68j</sha1>
+    </revision>
+    <revision>
+      <id>233199</id>
+      <parentid>233198</parentid>
+      <timestamp>2001-04-26T13:46:25Z</timestamp>
+      <contributor>
+        <username>Malcolm Farmer</username>
+        <id>135</id>
+      </contributor>
+      <comment>*</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Afghanistan/Geography]]
+
+</text>
+      <sha1>qco8zfsvwwxqosga8gb0s7epq1p89hq</sha1>
+    </revision>
+    <revision>
+      <id>15898949</id>
+      <parentid>407008306</parentid>
+      <timestamp>2002-02-25T15:43:11Z</timestamp>
+      <contributor>
+        <username>Conversion script</username>
+        <id>0</id>
+      </contributor>
+      <minor></minor>
+      <comment>Automated conversion</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Geography of Afghanistan]]
+</text>
+      <sha1>tbqxriha3tgljrcbi0bxsx66r3z9vsf</sha1>
+    </revision>
+    <revision>
+      <id>74466619</id>
+      <parentid>15898949</parentid>
+      <timestamp>2006-09-08T04:15:36Z</timestamp>
+      <contributor>
+        <username>Rory096</username>
+        <id>750223</id>
+      </contributor>
+      <comment>cat rd</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Geography of Afghanistan]] {{R from CamelCase}}</text>
+      <sha1>0uwuuhiam59ufbu0uzt9lookwtx9f4r</sha1>
+    </revision>
+    <revision>
+      <id>407008306</id>
+      <parentid>74466619</parentid>
+      <timestamp>2001-12-02T17:03:03Z</timestamp>
+      <contributor>
+        <username>Oskar Flordal</username>
+        <id>273</id>
+      </contributor>
+      <minor></minor>
+      <comment>dubble redirect</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Geography of Afghanistan]]</text>
+      <sha1>12ujjwzr2soe1ukl1kmnf4vyd99x11i</sha1>
+    </revision>
+    <revision>
+      <id>407008307</id>
+      <parentid>74466619</parentid>
+      <timestamp>2011-01-10T03:56:19Z</timestamp>
+      <contributor>
+        <username>Graham87</username>
+        <id>194203</id>
+      </contributor>
+      <minor></minor>
+      <comment>1 revision from [[:nost:AfghanistanGeography]]: import old edit, see [[User:Graham87/Import]]</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Geography of Afghanistan]] {{R from CamelCase}}</text>
+      <sha1>0uwuuhiam59ufbu0uzt9lookwtx9f4r</sha1>
+    </revision>
+    <revision>
+      <id>783865160</id>
+      <parentid>407008307</parentid>
+      <timestamp>2017-06-05T04:18:23Z</timestamp>
+      <contributor>
+        <username>Tom.Reding</username>
+        <id>9784415</id>
+      </contributor>
+      <minor></minor>
+      <comment>+{{Redirect category shell}} using [[Project:AWB|AWB]]</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Geography of Afghanistan]]
+
+{{Redirect category shell|1=
+{{R from CamelCase}}
+}}</text>
+      <sha1>39r4w8qg62iexlyskf0ga3tblagtl8x</sha1>
+    </revision>
+  </page>
+</mediawiki>

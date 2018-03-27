@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.10/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.10/ http://www.mediawiki.org/xml/export-0.10.xsd" version="0.10" xml:lang="en">
+  <page>
+    <title>AfghanistanCommunications</title>
+    <ns>0</ns>
+    <id>18</id>
+    <redirect title="Communications in Afghanistan"></redirect>
+    <revision>
+      <id>215878</id>
+      <parentid>233203</parentid>
+      <timestamp>2002-02-25T15:43:11Z</timestamp>
+      <contributor>
+        <username>Conversion script</username>
+        <id>0</id>
+      </contributor>
+      <minor></minor>
+      <comment>Automated conversion</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Afghanistan/Communications]]
+</text>
+      <sha1>awxndxm5j6si9wny2e1jewspu7ly6wi</sha1>
+    </revision>
+    <revision>
+      <id>233203</id>
+      <timestamp>2001-01-21T23:02:29Z</timestamp>
+      <contributor>
+        <username>LinusTolke</username>
+        <id>32609824</id>
+      </contributor>
+      <comment>*</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">Telephones - main lines in use: 31,200 (1983); note - there were 21,000 main lines in use in Kabul in 1998 
+
+
+
+Telephones - mobile cellular: NA 
+
+
+
+Telephone system: 
+
+domestic: very limited telephone and telegraph service; in 1997, telecommunications links were established between Mazar-e Sharif, Herat, Kandahar, Jalalabad, and Kabul
+
+through satellite and microwave systems 
+
+international: satellite earth stations - 1 Intelsat (Indian Ocean) linked only to Iran and 1 Intersputnik (Atlantic Ocean region); commercial satellite telephone center in
+
+Ghazni 
+
+
+
+Radio broadcast stations: AM 7 (6 are inactive; the active station is in Kabul), FM 1, shortwave 1 (broadcasts in Pushtu, Dari, Urdu, and English) (1999) 
+
+
+
+Radios: 167,000 (1999) 
+
+
+
+Television broadcast stations: at least 10 (one government run central television station in Kabul and regional stations in nine of the 30 provinces; the regional stations
+
+operate on a reduced schedule; also, in 1997, there was a station in Mazar-e Sharif reaching four northern Afghanistan provinces) (1998) 
+
+
+
+Televisions: 100,000 (1999) 
+
+
+
+Internet Service Providers (ISPs): NA 
+
+
+
+</text>
+      <sha1>hssqyt4lp4fvkbkrpo3az4r813js99x</sha1>
+    </revision>
+    <revision>
+      <id>15898952</id>
+      <parentid>215878</parentid>
+      <timestamp>2002-09-13T13:39:26Z</timestamp>
+      <contributor>
+        <username>Andre Engels</username>
+        <id>300</id>
+      </contributor>
+      <minor></minor>
+      <comment>indirect redirect</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Communications in Afghanistan]]</text>
+      <sha1>kmgvt2txxk7o430izy4xryol0byi93y</sha1>
+    </revision>
+    <revision>
+      <id>74466499</id>
+      <parentid>15898952</parentid>
+      <timestamp>2006-09-08T04:14:42Z</timestamp>
+      <contributor>
+        <username>Rory096</username>
+        <id>750223</id>
+      </contributor>
+      <comment>cat rd</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Communications in Afghanistan]] {{R from CamelCase}}</text>
+      <sha1>2gt5g76thwz1sgiig4ju2qz3r2qvwko</sha1>
+    </revision>
+    <revision>
+      <id>783865299</id>
+      <parentid>74466499</parentid>
+      <timestamp>2017-06-05T04:19:45Z</timestamp>
+      <contributor>
+        <username>Tom.Reding</username>
+        <id>9784415</id>
+      </contributor>
+      <minor></minor>
+      <comment>+{{Redirect category shell}} using [[Project:AWB|AWB]]</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Communications in Afghanistan]]
+
+{{Redirect category shell|1=
+{{R from CamelCase}}
+}}</text>
+      <sha1>q8gdi8070w6yitd4hqev68pn5niog3x</sha1>
+    </revision>
+  </page>
+</mediawiki>

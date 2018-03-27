@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.10/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.10/ http://www.mediawiki.org/xml/export-0.10.xsd" version="0.10" xml:lang="en">
+  <page>
+    <title>AmoeboidTaxa</title>
+    <ns>0</ns>
+    <id>24</id>
+    <redirect title="Amoeba"></redirect>
+    <revision>
+      <id>233211</id>
+      <timestamp>2001-01-23T05:21:23Z</timestamp>
+      <contributor>
+        <username>JoshuaGrosse</username>
+        <id>7792520</id>
+      </contributor>
+      <minor></minor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">Amoeboids include a wide variety of completely unrelated free-living and parasitic groups.  Amoebae move and feed via cellular projections called pseudopods, which are divided into rhizopods (unsupported) and actinopods (supported by rigid microtubules).
+
+
+
+Lobose amoebae are forms with broad, blunt rhizopods.  They may either have a single pseudopod at the front or many branching outwards.  They move by flowing into the pseudopod and feed by physically engulfing other objects, trapping them in vacuoles.  Forms include:
+
+
+
+* GenusPelomyxa, the giant amoeba (up to 1 mm!)
+
+* TaxonRamicristates, including most of the familiar amoebae
+
+* TaxonEntamoebae, various parasitic amoebae
+
+
+
+Filose amoebae include forms with fine, branching rhizopods.  TaxonGranuloreticulosa has members with rhizopods that form a network, and include the well-known shelled Foraminifera.
+
+
+
+The actinopod amoebae are divided into the Radiolaria, marine mostly shelled forms, and Heliozoa, which are mostly-fresh water and naked.  Pseudopods take the form of rigid spikes that collect food and aid in buoyancy.  Some heliozoans move by rolling along the substrate.  Radiolarian forms include:
+
+
+
+* TaxonPhaeodarea
+
+* TaxonPolycystinea
+
+* TaxonAcantharea
+
+
+
+and heliozoan forms include:
+
+
+
+* TaxonActinophryida
+
+* TaxonCentrohelida
+
+
+
+Also worth mentioning is the TaxonXenophyophorea, which includes various giant marine forms.  All of these are classified under the KingdomProtista.
+
+
+
+</text>
+      <sha1>nemqqm781j7q3ftozsao0cdsg8aafpi</sha1>
+    </revision>
+    <revision>
+      <id>15898958</id>
+      <parentid>233211</parentid>
+      <timestamp>2002-02-25T15:43:11Z</timestamp>
+      <contributor>
+        <username>Conversion script</username>
+        <id>0</id>
+      </contributor>
+      <minor></minor>
+      <comment>Automated conversion</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Amoeboid]]
+</text>
+      <sha1>qu35g622u78zu035gsynraz6954x5xb</sha1>
+    </revision>
+    <revision>
+      <id>74466889</id>
+      <parentid>15898958</parentid>
+      <timestamp>2006-09-08T04:17:51Z</timestamp>
+      <contributor>
+        <username>Rory096</username>
+        <id>750223</id>
+      </contributor>
+      <comment>cat rd</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Amoeboid]] {{R from CamelCase}}</text>
+      <sha1>k84gqaug0izzy1ber1dq8bogr2a6txa</sha1>
+    </revision>
+    <revision>
+      <id>624598911</id>
+      <parentid>74466889</parentid>
+      <timestamp>2014-09-07T23:21:13Z</timestamp>
+      <contributor>
+        <username>Invadibot</username>
+        <id>15934865</id>
+      </contributor>
+      <minor></minor>
+      <comment>Bot: Fixing double redirect to [[Amebas (pseudopodia protists)]]</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Amebas (pseudopodia protists)]] {{R from CamelCase}}</text>
+      <sha1>23y0kd9vcqb2n1s95wkbtwllezmxpiu</sha1>
+    </revision>
+    <revision>
+      <id>624612136</id>
+      <parentid>624598911</parentid>
+      <timestamp>2014-09-08T01:31:16Z</timestamp>
+      <contributor>
+        <username>Invadibot</username>
+        <id>15934865</id>
+      </contributor>
+      <minor></minor>
+      <comment>Bot: Fixing double redirect to [[Amebas (pseudopod protists)]]</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Amebas (pseudopod protists)]] {{R from CamelCase}}</text>
+      <sha1>5f3uorjeh7aavhozt9r7wvew0dh7iwv</sha1>
+    </revision>
+    <revision>
+      <id>625443465</id>
+      <parentid>624612136</parentid>
+      <timestamp>2014-09-13T22:04:34Z</timestamp>
+      <contributor>
+        <username>タチコマ robot</username>
+        <id>421426</id>
+      </contributor>
+      <minor></minor>
+      <comment>Robot: Fixing double redirect to [[Amoeba (amoeboid organism)]]</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Amoeba (amoeboid organism)]] {{R from CamelCase}}</text>
+      <sha1>r1scsepl7cvpw7bzegrk1y91dau697i</sha1>
+    </revision>
+    <revision>
+      <id>627604809</id>
+      <parentid>625443465</parentid>
+      <timestamp>2014-09-29T22:26:03Z</timestamp>
+      <contributor>
+        <username>Invadibot</username>
+        <id>15934865</id>
+      </contributor>
+      <minor></minor>
+      <comment>Bot: Fixing double redirect to [[Amoeba]]</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Amoeba]] {{R from CamelCase}}</text>
+      <sha1>afkde9noo6ive9c3gr5pq9sqlqf6w64</sha1>
+    </revision>
+    <revision>
+      <id>783865319</id>
+      <parentid>627604809</parentid>
+      <timestamp>2017-06-05T04:19:55Z</timestamp>
+      <contributor>
+        <username>Tom.Reding</username>
+        <id>9784415</id>
+      </contributor>
+      <minor></minor>
+      <comment>+{{Redirect category shell}} using [[Project:AWB|AWB]]</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve">#REDIRECT [[Amoeba]]
+
+{{Redirect category shell|1=
+{{R from CamelCase}}
+}}</text>
+      <sha1>ehl9qk3qz207n09xw0qj0wargvzjh4s</sha1>
+    </revision>
+  </page>
+</mediawiki>
