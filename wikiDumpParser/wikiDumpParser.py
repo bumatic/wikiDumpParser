@@ -77,6 +77,8 @@ class Project:
             return None
 
     def add_dump_file_info(self, file_list, base_url):
+        if base_url[-1:] != '/':
+            base_url = base_url+'/'
         self.pinfo['base_url'] = base_url
         file_list = pd.read_csv(file_list, header=None, delimiter='  ', names=['md5', 'name'])
         if 'dump' not in self.pinfo.keys():
@@ -89,6 +91,30 @@ class Project:
             self.save_project()
         else:
             print('Dump list has already been added to project.')
+
+    def load_dump_info(self, json_file, base_url):
+        if base_url[-1:] != '/':
+            base_url = base_url+'/'
+        self.pinfo['base_url'] = base_url
+        url = base_url + json_file
+        dump_info_file = 'dump_info.json'
+        response = requests.get(url, stream=True)
+        with open(os.path.join(self.path, dump_info_file), "wb") as handle:
+            for data in response.iter_content(chunk_size=32768):
+                handle.write(data)
+        with open(os.path.join(os.getcwd(), self.path, dump_info_file), 'r') as info_file:
+            dump_info = json.load(info_file)
+        info_file.close()
+
+        self.pinfo['dump'] = {}
+        self.pinfo['md5'] = {}
+
+        for key, value in dump_info['jobs']['metahistory7zdump']['files'].items():
+            if bool(value):
+                self.pinfo['dump'][key] = 'init'
+                self.pinfo['md5'][key] = value['md5']
+        self.save_project()
+        os.remove(os.path.join(os.getcwd(), self.path, dump_info_file))
 
     def get_processing_status(self):
         if 'dump' in self.pinfo.keys():
