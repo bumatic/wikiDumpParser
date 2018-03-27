@@ -142,7 +142,7 @@ class Processor:
                     os.makedirs(too_large)
                 #print(os.path.split(file[1]))
                 try:
-                    subprocess.call(['7z', 'a', os.path.join(os.getcwd(), file + '.7z'), os.path.join(os.getcwd(), file)], shell=True)
+                    subprocess.call(['7z', 'a', os.path.join(os.getcwd(), file + '.7z'), os.path.join(os.getcwd(), file)])
                     shutil.copy2(file+'.7z', too_large)
                     os.remove(file)
                     os.remove(file+'.7z')
@@ -281,14 +281,14 @@ class Processor:
 
         try:
             subprocess.call(['7z', 'a', os.path.join(os.getcwd(), cat_results_file + '.7z'),
-                             os.path.join(os.getcwd(), cat_results_file)], shell=True)
+                             os.path.join(os.getcwd(), cat_results_file)])
             os.remove(cat_results_file)
         #print('COMPRESS LINK RESULTS')
         except:
             pass
         try:
             subprocess.call(['7z', 'a', os.path.join(os.getcwd(), link_results_file + '.7z'),
-                             os.path.join(os.getcwd(), link_results_file)], shell=True)
+                             os.path.join(os.getcwd(), link_results_file)])
             os.remove(link_results_file)
         except:
             pass
