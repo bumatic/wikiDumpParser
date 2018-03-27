@@ -252,25 +252,23 @@ class Processor:
         return cats, links
 
     def postprocessing_cat_link(self):
-        print('start postprocessing')
+        #print('start postprocessing')
         results_base = os.path.join(self.data_path_base, 'results')
         relevant_revisions_file = os.path.join(results_base, 'relevant_revisions.csv')
         results_path = os.path.join(results_base, os.path.splitext(self.file_name)[0])
         cat_results_file = os.path.join(results_path, 'cats.csv')
         link_results_file = os.path.join(results_path, 'links.csv')
-        print('start postprocessing categories')
+        #print('start postprocessing categories')
         cat_results_file = self.process_categories(cat_results_file)
-        print('start postprocessing links')
+        #print('start postprocessing links')
         link_results_file = self.process_links(link_results_file)
-        print('start postprocessing relevant revisions')
+        #print('start postprocessing relevant revisions')
         relevant_revisions = self.assemble_list_of_relevant_revisions(cat_results_file, link_results_file)
         relevant_revisions.to_csv(relevant_revisions_file, sep='\t', index=False, header=False, mode='a')
-
         subprocess.call(['7z', 'a', cat_results_file + '.7z', cat_results_file])
         subprocess.call(['7z', 'a', link_results_file + '.7z', link_results_file])
-        #os.remove(cat_results_file)
-        #os.remove(link_results_file)
-
+        os.remove(cat_results_file)
+        os.remove(link_results_file)
         return True
 
     def process_categories(self, cat_file):

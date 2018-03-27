@@ -1,6 +1,7 @@
 import os
 import json
 import pandas as pd
+import shutil
 from dateutil import parser
 from datetime import datetime
 from wikiDumpParser.processor import *
@@ -150,23 +151,6 @@ class Project:
             print("No dump files have been added yet for processing.")
             return
 
-
-    '''
-    def download_all_first(self):
-        if 'dump' not in self.pinfo.keys():
-            print('No dump file info has been added to the project yet – use: '
-                  'Project.add_dump_file_info(self, file_list, base_url)')
-        else: 
-            for f, status in self.pinfo['dump'].items():
-                if status == 'init':
-                    status = Processor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date']).process()
-                    self.pinfo['dump'][f] = status
-                    self.save_project()
-                    #self.process_file(f, status, 'init')
-                    print(self.get_processing_status())
-    '''
-
-
     def process(self):
         process_order = ['done',
                          'post',
@@ -180,13 +164,88 @@ class Project:
                   'Project.add_dump_file_info(self, file_list, base_url)')
 
         else:
+            self.cleanup()
             for step in process_order:
                 Parallel(n_jobs=self.pinfo['parallel_processes'])(delayed(self.process_file)(f, status, step)
-                                   for f, status in self.pinfo['dump'].items())
+                                                                  for f, status in self.pinfo['dump'].items())
+
+    def cleanup(self):
+        for key, value in self.pinfo['dump'].items():
+            if value == 'download_started':
+                # remove downloaded file: rest to error
+                try:
+                    shutil.rmtree(os.path.join(self.data_path, key[:-3]))
+                except:
+                    pass
+                try:
+                    shutil.rmtree(os.path.join(self.data_path, 'results', key[:-3]))
+                except:
+                    pass
+                self.pinfo['dump'][key] = 'error'
+                self.save_project()
+            if value == 'splitting_started':
+                # remove all files except downloaded file: reset to init
+                try:
+                    shutil.rmtree(os.path.join(self.data_path, key[:-3]))
+                except:
+                    pass
+                try:
+                    shutil.rmtree(os.path.join(self.path, 'results', key[:-3]))
+                except:
+                    pass
+                self.pinfo['dump'][key] = 'error'
+                self.save_project()
+                pass
+            if value == 'parsing_started':
+                try:
+                    shutil.rmtree(os.path.join(self.data_path, key[:-3]))
+                except:
+                    pass
+                try:
+                    shutil.rmtree(os.path.join(self.path, 'results', key[:-3]))
+                except:
+                    pass
+                self.pinfo['dump'][key] = 'error'
+                self.save_project()
+                pass
+            if value == 'postprocessing_started':
+                try:
+                    shutil.rmtree(os.path.join(self.data_path, key[:-3]))
+                except:
+                    pass
+                try:
+                    shutil.rmtree(os.path.join(self.path, 'results', key[:-3]))
+                except:
+                    pass
+                self.pinfo['dump'][key] = 'error'
+                self.save_project()
+
+    def retry_errors(self):
+        self.cleanup()
+        for key, value in self.pinfo['dump'].items():
+            if value == 'error':
+                self.pinfo['dump'][key] = 'init'
+                self.save_project()
 
     def process_file(self, f, status, step):
         while status != 'post':
+            if status == 'error':
+                return
             print('Call next Processor for ' + status + ' file: ' + f)
+            if status == 'init':
+                self.pinfo['dump'][f] = 'download_started'
+                self.save_project()
+            if status == 'downloaded':
+                self.pinfo['dump'][f] = 'splitting_started'
+                os.path.join(self.data_path, f[:-3])
+                self.save_project()
+            if status == 'split':
+                self.pinfo['dump'][f] = 'parsing_started'
+                self.save_project()
+            if status == 'parsed':
+                self.pinfo['dump'][f] = 'postprocessing_started'
+                self.save_project()
+
             status = Processor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date'],
                                self.pinfo['md5'][f]).process()
             self.pinfo['dump'][f] = status
