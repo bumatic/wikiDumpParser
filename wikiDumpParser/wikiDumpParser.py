@@ -12,6 +12,7 @@ class Project:
     def __init__(self, path='project'):
         self.path = path
         self.data_path = os.path.join(self.path, 'data')
+        self.tmp_status_path = os.path.join(self.data_path, 'tmp_status')
         self.pinfo = {}
         self.pinfo_file = os.path.join(self.path, '_project_info.json')
         self.pinfo['start_date'] = parser.parse('1990-01-01').timestamp()
@@ -22,6 +23,8 @@ class Project:
             os.makedirs(os.path.join(os.getcwd(), self.path))
         if not os.path.isdir(os.path.join(os.getcwd(), self.data_path)):
             os.makedirs(os.path.join(os.getcwd(), self.data_path))
+        if not os.path.isdir(os.path.join(os.getcwd(), self.tmp_status_path)):
+            os.makedirs(os.path.join(os.getcwd(), self.tmp_status_path))
         if start_date is not None:
             self.pinfo['start_date'] = parser.parse(start_date).timestamp()
         if dump_date is not None:
@@ -37,11 +40,27 @@ class Project:
             with open(os.path.join(os.getcwd(), self.pinfo_file), 'r') as info_file:
                 self.pinfo = json.load(info_file)
             info_file.close()
+        self.update_status()
 
     def save_project(self):
         with open(self.pinfo_file, 'w') as info_file:
             json.dump(self.pinfo, info_file, sort_keys=True, indent=4)
         return
+
+    def save_tmp_status(self, filename, status):
+        with open(os.path.join(self.tmp_status_path, filename), 'w') as info_file:
+            json.dump(status, info_file, sort_keys=True, indent=4)
+        return
+
+    def update_status(self):
+        for f in glob.glob(self.tmp_status_path + '/*'):
+            with open(os.path.join(os.getcwd(), f), 'r') as info_file:
+                status = json.load(info_file)
+            print(os.path.basename(f))
+            print(status)
+            self.pinfo['dump'][os.path.basename(f)+'.7z'] = status
+            self.save_project()
+            os.remove(f)
 
     def set_start_date(self, date):
         self.pinfo['start_date'] = parser.parse(date)
@@ -118,13 +137,19 @@ class Project:
         os.remove(os.path.join(os.getcwd(), self.path, dump_info_file))
 
     def get_processing_status(self):
+        self.update_status()
         if 'dump' in self.pinfo.keys():
             total = 0
             init = 0
             downloaded = 0
+            download_started = 0
             split = 0
+            splitting_started = 0
             parsed = 0
+            parsing_started = 0
             post = 0
+            postprocessing_started = 0
+            error = 0
             done = 0
             for item, value in self.pinfo['dump'].items():
                 total += 1
@@ -132,42 +157,40 @@ class Project:
                     init += 1
                 elif value == 'downloaded':
                     downloaded += 1
+                elif value == 'download_started':
+                    download_started += 1
                 elif value == 'split':
                     split += 1
+                elif value == 'splitting_started':
+                    splitting_started += 1
                 elif value == 'parsed':
                     parsed += 1
+                elif value == 'parsing_started':
+                    parsing_started += 1
                 elif value == 'post':
                     post += 1
+                elif value == 'postprocessing_started':
+                    postprocessing_started += 1
                 elif value == 'done':
                     done += 1
+                elif value == 'error':
+                    error += 1
             print('Total number of files to process: '+str(total))
             print('Number of files done: ' + str(done))
             print('Number of files post-processed: ' + str(post))
+            print('Number of files post-processing started: ' + str(postprocessing_started))
             print('Number of files parsed: ' + str(parsed))
+            print('Number of files parsing_started: ' + str(parsing_started))
             print('Number of files split: ' + str(split))
+            print('Number of files splitting started: ' + str(splitting_started))
             print('Number of files downloaded: ' + str(downloaded))
+            print('Number of files download started: ' + str(download_started))
+            print('Number of files with errors: ' + str(error))
             print('Number of files not yet started: ' + str(init))
         else:
             print("No dump files have been added yet for processing.")
             return
 
-    def process(self):
-        process_order = ['done',
-                         'post',
-                         'parsed',
-                         'split',
-                         'downloaded',
-                         'init']
-
-        if 'dump' not in self.pinfo.keys():
-            print('No dump file info has been added to the project yet – use: '
-                  'Project.add_dump_file_info(self, file_list, base_url)')
-
-        else:
-            self.cleanup()
-            for step in process_order:
-                Parallel(n_jobs=self.pinfo['parallel_processes'])(delayed(self.process_file)(f, status, step)
-                                                                  for f, status in self.pinfo['dump'].items())
 
     def cleanup(self):
         for key, value in self.pinfo['dump'].items():
@@ -191,26 +214,45 @@ class Project:
                 self.pinfo['dump'][key] = 'init'
                 self.save_project()
 
-    def process_file(self, f, status, step):
+    def process(self):
+        '''
+        process_order = ['done',
+                         'post',
+                         'parsed',
+                         'split',
+                         'downloaded',
+                         'init']
+        '''
+
+        if 'dump' not in self.pinfo.keys():
+            print('No dump file info has been added to the project yet – use: '
+                  'Project.add_dump_file_info(self, file_list, base_url)')
+        else:
+            self.update_status()
+            self.cleanup()
+            Parallel(n_jobs=self.pinfo['parallel_processes'])\
+                (delayed(self.process_file)(f, status) for f, status in self.pinfo['dump'].items())
+
+    def process_file(self, f, status):
         while status != 'post':
             if status == 'error':
                 return
             print('Call next Processor for ' + status + ' file: ' + f)
             if status == 'init':
-                self.pinfo['dump'][f] = 'download_started'
-                self.save_project()
+                tmp_status = 'download_started'
             if status == 'downloaded':
-                self.pinfo['dump'][f] = 'splitting_started'
+                tmp_status = 'splitting_started'
                 # os.path.join(self.data_path, f[:-3])
-                self.save_project()
             if status == 'split':
-                self.pinfo['dump'][f] = 'parsing_started'
-                self.save_project()
+                tmp_status = 'parsing_started'
             if status == 'parsed':
-                self.pinfo['dump'][f] = 'postprocessing_started'
-                self.save_project()
+                tmp_status = 'postprocessing_started'
+
+            self.save_tmp_status(f[:-3], tmp_status)
 
             status = Processor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date'],
                                self.pinfo['md5'][f]).process()
-            self.pinfo['dump'][f] = status
-            self.save_project()
+            self.save_tmp_status(f[:-3], status)
+
+            #self.pinfo['dump'][f] = status
+            #self.save_project()
