@@ -171,7 +171,7 @@ class Project:
 
     def cleanup(self):
         for key, value in self.pinfo['dump'].items():
-            if value == 'download_started':
+            if value in ['download_started', 'splitting_started', 'parsed_started', 'postprocessing_started']:
                 # remove downloaded file: rest to error
                 try:
                     shutil.rmtree(os.path.join(self.data_path, key[:-3]))
@@ -179,42 +179,6 @@ class Project:
                     pass
                 try:
                     shutil.rmtree(os.path.join(self.data_path, 'results', key[:-3]))
-                except:
-                    pass
-                self.pinfo['dump'][key] = 'error'
-                self.save_project()
-            if value == 'splitting_started':
-                # remove all files except downloaded file: reset to init
-                try:
-                    shutil.rmtree(os.path.join(self.data_path, key[:-3]))
-                except:
-                    pass
-                try:
-                    shutil.rmtree(os.path.join(self.path, 'results', key[:-3]))
-                except:
-                    pass
-                self.pinfo['dump'][key] = 'error'
-                self.save_project()
-                pass
-            if value == 'parsing_started':
-                try:
-                    shutil.rmtree(os.path.join(self.data_path, key[:-3]))
-                except:
-                    pass
-                try:
-                    shutil.rmtree(os.path.join(self.path, 'results', key[:-3]))
-                except:
-                    pass
-                self.pinfo['dump'][key] = 'error'
-                self.save_project()
-                pass
-            if value == 'postprocessing_started':
-                try:
-                    shutil.rmtree(os.path.join(self.data_path, key[:-3]))
-                except:
-                    pass
-                try:
-                    shutil.rmtree(os.path.join(self.path, 'results', key[:-3]))
                 except:
                     pass
                 self.pinfo['dump'][key] = 'error'
@@ -237,7 +201,7 @@ class Project:
                 self.save_project()
             if status == 'downloaded':
                 self.pinfo['dump'][f] = 'splitting_started'
-                os.path.join(self.data_path, f[:-3])
+                # os.path.join(self.data_path, f[:-3])
                 self.save_project()
             if status == 'split':
                 self.pinfo['dump'][f] = 'parsing_started'

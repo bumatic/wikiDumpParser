@@ -130,17 +130,11 @@ class Processor:
                     elem.clear()
                     while elem.getprevious() is not None:
                         del elem.getparent()[0]
-
-
-                # Remove parsed file
                 os.remove(file)
             else:
-                #print('TOOOO LARGE')
-                #print(file)
                 too_large = os.path.join(self.data_path_base, 'too_large_to_parse')
                 if not os.path.isdir(too_large):
                     os.makedirs(too_large)
-                #print(os.path.split(file[1]))
                 try:
                     subprocess.call(['7z', 'a', os.path.join(os.getcwd(), file + '.7z'), os.path.join(os.getcwd(), file)])
                     shutil.copy2(file+'.7z', too_large)
@@ -157,12 +151,8 @@ class Processor:
         return True
 
     def get_data(self, page, cat_results_file, link_results_file):
-        # Besser als Pandas DF?!
-        #page_info = np.empty([0, 4])
         page_info = pd.DataFrame(columns=['page_id', 'page_title', 'page_ns', 'date_created'])
-        #revision_info = np.empty([0, 3])
         revision_info = pd.DataFrame(columns=['page_id', 'rev_id', 'rev_time'])
-        #no_text_error = np.empty([0, 2])
         no_text_error = pd.DataFrame(columns=['page_id', 'rev_id'])
         page_title = 'NULL'
         page_id = 'NULL'
@@ -227,8 +217,6 @@ class Processor:
 
                 page_info = page_info.append(pd.DataFrame([[page_id, page_title, page_ns, rev_time]],
                                                           columns=['page_id', 'page_title', 'page_ns', 'date_created']))
-
-
         return page_info, revision_info, no_text_error
 
 
@@ -255,35 +243,28 @@ class Processor:
         return cats, links
 
     def postprocessing_cat_link(self):
-        #print('start postprocessing')
         results_base = os.path.join(self.data_path_base, 'results')
         relevant_revisions_file = os.path.join(results_base, 'relevant_revisions.csv')
         results_path = os.path.join(results_base, os.path.splitext(self.file_name)[0])
         cat_results_file = os.path.join(results_path, 'cats.csv')
         link_results_file = os.path.join(results_path, 'links.csv')
-        #print('start postprocessing categories')
         try:
             cat_results_file = self.process_categories(cat_results_file)
         except:
             pass
-        #print('start postprocessing links')
         try:
             link_results_file = self.process_links(link_results_file)
         except:
             pass
-        #print('start postprocessing relevant revisions')
         try:
             relevant_revisions = self.assemble_list_of_relevant_revisions(cat_results_file, link_results_file)
             relevant_revisions.to_csv(relevant_revisions_file, sep='\t', index=False, header=False, mode='a')
         except:
             pass
-        #print('COMPRESS CAT RESULTS')
-
         try:
             subprocess.call(['7z', 'a', os.path.join(os.getcwd(), cat_results_file + '.7z'),
                              os.path.join(os.getcwd(), cat_results_file)])
             os.remove(cat_results_file)
-        #print('COMPRESS LINK RESULTS')
         except:
             pass
         try:
@@ -292,7 +273,6 @@ class Processor:
             os.remove(link_results_file)
         except:
             pass
-
         return True
 
     def process_categories(self, cat_file):
