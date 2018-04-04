@@ -1,6 +1,5 @@
 import os
 from pyunpack import Archive
-from tqdm import tqdm
 import requests
 from retrying import retry
 from xml.sax import parse
@@ -13,10 +12,13 @@ import glob
 import subprocess
 from dateutil import parser
 import pandas as pd
+import hashlib
+import random
+import time
 
 
 class Processor:
-    def __init__(self, file_name, data_path, base_url, status, start_date):
+    def __init__(self, file_name, data_path, base_url, status, start_date, md5):
         self.file_name = file_name
         self.data_path_base = data_path
         self.data_path = os.path.join(self.data_path_base, os.path.splitext(self.file_name)[0])
@@ -25,12 +27,90 @@ class Processor:
         self.base_url = base_url
         self.status = status
         self.start_date = start_date
+        self.md5 = md5
+
+        # List of files larger than 10GB.
+        # As of 1. March 2018 all of them are outside the scope of the parser and can be ignored.
+        # Automatic handling needs to be implemented.
+        self.ignore = [
+            # TITLE: Wikipedia:Village pump (policy), NS: 4
+            986140,
+            # TITLE: Wikipedia:Administrators' noticeboard/Incidents, NS: 4
+            5137507,
+            # TITLE: Wikipedia:Reference desk/Miscellaneous, NS: 4
+            40297,
+            # TITLE: Template talk:Did you know, NS: 11
+            972034,
+            # TITLE: Wikipedia:Reference desk/Humanities , NS: 4
+            2535875,
+            # TITLE: Wikipedia:Reference desk/Science , NS: 4
+            2535910,
+            # TITLE: Wikipedia talk:Manual of Style , NS: 5
+            75321,
+            # TITLE: Wikipedia:Help desk , NS: 4
+            564696,
+            # TITLE: Wikipedia:Reference desk/Language , NS: 4
+            2515121,
+            # TITLE: Wikipedia talk:Requests for adminship , NS: 5
+            2609426,
+            # TITLE: Wikipedia:Village pump (technical) , NS: 4
+            3252662,
+            # TITLE: Wikipedia:Administrators' noticeboard , NS: 4
+            5149102,
+            # TITLE: Wikipedia:In the news/Candidates , NS: 4
+            1470141,
+            # TITLE: Wikipedia:Administrators' noticeboard/Edit warring , NS: 4
+            3741656,
+            # TITLE: Wikipedia:Good article nominations , NS: 4
+            3514978,
+            # TITLE: Wikipedia:Village pump (proposals) , NS: 4
+            3706897,
+            # TITLE: Wikipedia:Reference desk/Computing , NS: 4
+            6041086,
+            # TITLE: User talk:DGG , NS: 3
+            6905700,
+            # TITLE: Wikipedia:Requested moves/Current discussions (alt) , NS: 4
+            23259666,
+            # TITLE: Wikipedia:Biographies of living persons/Noticeboard , NS: 4
+            6768170,
+            # TITLE: User:COIBot/LinkReports , NS: 2
+            10701605,
+            # TITLE: Wikipedia:Reliable sources/Noticeboard , NS: 4
+            11424955,
+            # TITLE: User talk:Jimbo Wales , NS: 3
+            9870625,
+            # TITLE: Wikipedia:Arbitration/Requests/Enforcement , NS: 4
+            12936136,
+            # TITLE: User talk:ImageTaggingBot/log , NS: 3
+            17820752,
+            # TITLE: Wikipedia:WikiProject Spam/LinkReports , NS: 4
+            16927404,
+            # TITLE: User:JamesR/AdminStats , NS: 2
+            18530389,
+            # TITLE: Template:AFC statistics , NS: 10
+            23309859,
+            # TITLE: Wikipedia:Requested moves/Current discussions , NS: 4
+            22998103,
+            # TITLE: User:West.andrew.g/Dead links , NS: 2
+            32101143,
+            # TITLE: User:B-bot/Event log , NS: 2
+            46505226,
+            # TITLE: User:Pentjuuu!.!/sandbox , NS: 2
+            42765277,
+            # TITLE: Wikipedia:Teahouse , NS: 4
+            34745517
+        ]
 
     def process(self):
         if self.status == 'init':
             success = self.download_dump_file()
             if success:
                 new_status = 'downloaded'
+                return new_status
+            else:
+                new_status = 'init'
+                print('Download error. Waiting 60 to 120 seconds to restart.')
+                time.sleep(random.randint(60, 120))
                 return new_status
         if self.status == 'downloaded':
             # ONCE IMPLEMENTE NEW_STATUS NEEDS TO BE SET TO NEXT.
@@ -56,11 +136,25 @@ class Processor:
 
     @retry(wait_random_min=1000, wait_random_max=20000, stop_max_attempt_number=20)
     def download_dump_file(self):
+        x = random.randint(1, 120)
+        time.sleep(x)
         response = requests.get(self.base_url + self.file_name, stream=True)
         with open(os.path.join(self.data_path, self.file_name), "wb") as handle:
-            for data in tqdm(response.iter_content(chunk_size=32768)):
+            for data in response.iter_content(chunk_size=32768):
                 handle.write(data)
-        return True
+        new_md5 = self.get_md5(os.path.join(self.data_path, self.file_name))
+        if new_md5 == self.md5:
+            return True
+        else:
+            os.remove(os.path.join(self.data_path, self.file_name))
+
+    @staticmethod
+    def get_md5(fname):
+        hash_md5 = hashlib.md5()
+        with open(fname, "rb") as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hash_md5.update(chunk)
+        return hash_md5.hexdigest()
 
     def unpack(self):
         Archive(os.path.join(self.data_path, self.file_name)).extractall(os.path.join(os.getcwd(), self.data_path))
@@ -108,46 +202,34 @@ class Processor:
                     elem.clear()
                     while elem.getprevious() is not None:
                         del elem.getparent()[0]
-
-
-                # Remove parsed file
                 os.remove(file)
             else:
-                #print('TOOOO LARGE')
-                #print(file)
                 too_large = os.path.join(self.data_path_base, 'too_large_to_parse')
                 if not os.path.isdir(too_large):
                     os.makedirs(too_large)
-                #print(os.path.split(file[1]))
-                subprocess.call(['7z', 'a', file + '.7z', file])
-                shutil.copy2(file+'.7z', too_large)
-                os.remove(file)
-                os.remove(file+'.7z')
-
-        # Handle results
-        #subprocess.call(['7z', 'a', cat_results_file + '.7z', cat_results_file])
-        #subprocess.call(['7z', 'a', link_results_file + '.7z', link_results_file])
-        #os.remove(cat_results_file)
-        #os.remove(link_results_file)
+                try:
+                    subprocess.call(['7z', 'a', os.path.join(os.getcwd(), file + '.7z'),
+                                     os.path.join(os.getcwd(), file)])
+                    shutil.copy2(file+'.7z', too_large)
+                    os.remove(file)
+                    os.remove(file+'.7z')
+                except:
+                    pass
         return True
 
     def get_data(self, page, cat_results_file, link_results_file):
-        # Besser als Pandas DF?!
-        #page_info = np.empty([0, 4])
         page_info = pd.DataFrame(columns=['page_id', 'page_title', 'page_ns', 'date_created'])
-        #revision_info = np.empty([0, 3])
         revision_info = pd.DataFrame(columns=['page_id', 'rev_id', 'rev_time'])
-        #no_text_error = np.empty([0, 2])
         no_text_error = pd.DataFrame(columns=['page_id', 'rev_id'])
         page_title = 'NULL'
         page_id = 'NULL'
         page_ns = 'NULL'
         rev_id = 'NULL'
         rev_time = 'NULL'
-        rev_text = 'NULL'
+        # rev_text = 'NULL'
         rev_parent = 'NULL'
-        rev_links = []
-        rev_cats = []
+        # rev_links = []
+        # rev_cats = []
 
         # Get data for page_info
         for elem in page.iterchildren(reversed=False, tag=None):
@@ -195,20 +277,19 @@ class Processor:
                                     outfile.write(page_id + '\t' + rev_id + '\t' + cat + '\n')
 
                 # Write data for revision_info
-                revision_info = revision_info.append(pd.DataFrame([[page_id, rev_id, rev_time]], columns=['page_id', 'rev_id', 'rev_time']))
+                revision_info = revision_info.append(pd.DataFrame([[page_id, rev_id, rev_time]],
+                                                                  columns=['page_id', 'rev_id', 'rev_time']))
 
             # Write data for page_info, include time of the first revision for the creation time of the page
             if rev_parent == 'NULL':
 
                 page_info = page_info.append(pd.DataFrame([[page_id, page_title, page_ns, rev_time]],
                                                           columns=['page_id', 'page_title', 'page_ns', 'date_created']))
-
-
         return page_info, revision_info, no_text_error
 
-
     # Returns two lists (cats and links) containing each only links to articles and links to categories
-    def links(self, text):
+    @staticmethod
+    def links(text):
         # Extract links from revision text.
         # Returns: links
         try:
@@ -230,25 +311,36 @@ class Processor:
         return cats, links
 
     def postprocessing_cat_link(self):
-        print('start postprocessing')
         results_base = os.path.join(self.data_path_base, 'results')
         relevant_revisions_file = os.path.join(results_base, 'relevant_revisions.csv')
         results_path = os.path.join(results_base, os.path.splitext(self.file_name)[0])
         cat_results_file = os.path.join(results_path, 'cats.csv')
         link_results_file = os.path.join(results_path, 'links.csv')
-        print('start postprocessing categories')
-        cat_results_file = self.process_categories(cat_results_file)
-        print('start postprocessing links')
-        link_results_file = self.process_links(link_results_file)
-        print('start postprocessing relevant revisions')
-        relevant_revisions = self.assemble_list_of_relevant_revisions(cat_results_file, link_results_file)
-        relevant_revisions.to_csv(relevant_revisions_file, sep='\t', index=False, header=False, mode='a')
-
-        subprocess.call(['7z', 'a', cat_results_file + '.7z', cat_results_file])
-        subprocess.call(['7z', 'a', link_results_file + '.7z', link_results_file])
-        #os.remove(cat_results_file)
-        #os.remove(link_results_file)
-
+        try:
+            cat_results_file = self.process_categories(cat_results_file)
+        except:
+            pass
+        try:
+            link_results_file = self.process_links(link_results_file)
+        except:
+            pass
+        try:
+            relevant_revisions = self.assemble_list_of_relevant_revisions(cat_results_file, link_results_file)
+            relevant_revisions.to_csv(relevant_revisions_file, sep='\t', index=False, header=False, mode='a')
+        except:
+            pass
+        try:
+            subprocess.call(['7z', 'a', os.path.join(os.getcwd(), cat_results_file + '.7z'),
+                             os.path.join(os.getcwd(), cat_results_file)])
+            os.remove(cat_results_file)
+        except:
+            pass
+        try:
+            subprocess.call(['7z', 'a', os.path.join(os.getcwd(), link_results_file + '.7z'),
+                             os.path.join(os.getcwd(), link_results_file)])
+            os.remove(link_results_file)
+        except:
+            pass
         return True
 
     def process_categories(self, cat_file):
@@ -282,7 +374,8 @@ class Processor:
         os.rename(tmp_results_file, link_file)
         return link_file
 
-    def clean_labels(self, df, dimension):
+    @staticmethod
+    def clean_labels(df, dimension):
         for row in df.itertuples():
             if bool(re.search(r"(.*?)[\#\|]", getattr(row, dimension))):
                 clean_title = re.search(r"(.*?)[\#\|]", getattr(row, dimension)).group(1)
@@ -292,7 +385,8 @@ class Processor:
         df = df.drop_duplicates()
         return df
 
-    def unique_revisions(self, df):
+    @staticmethod
+    def unique_revisions(df):
         curr_page = 0
         unique = pd.DataFrame()
         for name, group in df.groupby(['page_id', 'rev_id']):
@@ -324,12 +418,6 @@ class Processor:
             tmp_data = tmp_data.drop_duplicates()
             results = results.append(tmp_data)
         return results
-
-    #def update_revisions_file(rev_file, cat_file, link_file):
-    #    relevant_revs = assemble_revision_list(cat_file, link_file)
-    #    rev_data = pd.read_csv(rev_file, delimiter='\t', names=['page_id', 'rev_id', 'ts'])
-    #    rev_data = rev_data[rev_data['rev_id'].isin(relevant_revs['rev_id'])].reset_index().drop('index', 1)
-    #    rev_data.to_csv(rev_file, sep='\t', index=False, header=False, mode='w')
 
 
 class CycleFile(object):
@@ -390,4 +478,3 @@ class XMLBreaker(XMLGenerator):
                 XMLGenerator.startDocument(self)
                 for element in self.context:
                     XMLGenerator.startElement(self, *element)
-
