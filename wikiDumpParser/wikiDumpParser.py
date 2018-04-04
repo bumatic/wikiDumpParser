@@ -4,7 +4,8 @@ import pandas as pd
 import shutil
 from dateutil import parser
 from datetime import datetime
-from wikiDumpParser.processor import *
+from wikiDumpParser.processorData import *
+from wikiDumpParser.processorResults import *
 from joblib import Parallel, delayed
 
 
@@ -12,6 +13,7 @@ class Project:
     def __init__(self, path='project'):
         self.path = path
         self.data_path = os.path.join(self.path, 'data')
+        self.results_path = os.path.join(self.data_path, 'results')
         self.tmp_status_path = os.path.join(self.data_path, 'tmp_status')
         self.pinfo = {}
         self.pinfo_file = os.path.join(self.path, '_project_info.json')
@@ -56,8 +58,6 @@ class Project:
         for f in glob.glob(self.tmp_status_path + '/*'):
             with open(os.path.join(os.getcwd(), f), 'r') as info_file:
                 status = json.load(info_file)
-            print(os.path.basename(f))
-            print(status)
             self.pinfo['dump'][os.path.basename(f)+'.7z'] = status
             self.save_project()
             os.remove(f)
@@ -191,7 +191,6 @@ class Project:
             print("No dump files have been added yet for processing.")
             return
 
-
     def cleanup(self):
         for key, value in self.pinfo['dump'].items():
             if value in ['download_started', 'splitting_started', 'parsed_started', 'postprocessing_started']:
@@ -254,5 +253,9 @@ class Project:
                                self.pinfo['md5'][f]).process()
             self.save_tmp_status(f[:-3], status)
 
-            #self.pinfo['dump'][f] = status
-            #self.save_project()
+    def process_results(self):
+        ProcessorResults(self).process()
+
+    def combine_old_and_new(self, path=None, cats=None, links=None, page_info=None, revisions=None):
+        ProcessorResults(self).combine_old_and_new(path=path, cats=cats, links=links,
+                                                   page_info=page_info, revisions=revisions)

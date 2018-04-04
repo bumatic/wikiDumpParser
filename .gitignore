@@ -9,7 +9,7 @@ project/
 .DS_Store
 .idea/
 wikiDumpParser/.DS_Store
-
+protocol.txt
 
 # C extensions
 *.so
