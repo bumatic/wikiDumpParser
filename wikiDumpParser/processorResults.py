@@ -56,44 +56,58 @@ class ProcessorResults:
                      os.path.join(self.project.data_path, 'page_info.csv'))
 
     def combine_old_and_new(self, path=None, cats=None, links=None, page_info=None, revisions=None):
+        dtype = str
         if path is None:
             path = '/'
         if cats is not None:
             old_file = os.path.join(self.project.data_path, path, cats)
             new_file = os.path.join(self.project.data_path, 'cats_all.csv')
             results_file = os.path.join(self.project.data_path, 'cats_combined.csv')
-            results = pd.DataFrame()
             if os.path.isfile(old_file) and os.path.isfile(new_file):
-                results = results.append(pd.read_csv(old_file, delimiter='\t', na_filter=False))
-                results = results.append(pd.read_csv(new_file, delimiter='\t', na_filter=False))
-                results.to_csv(results_file, sep='\t', index=False, header=False, mode='w')
-                del results
+                chunksize = 1000000
+                for chunk in pd.read_csv(old_file, delimiter='\t', header=None, dtype=dtype, na_filter=False, chunksize=chunksize):
+                    chunk.to_csv(results_file, sep='\t', index=False, header=False, mode='a')
+                for chunk in pd.read_csv(new_file, delimiter='\t', header=None, dtype=dtype, na_filter=False, chunksize=chunksize):
+                    chunk.to_csv(results_file, sep='\t', index=False, header=False, mode='a')
             else:
                 print('New or old categories file does not exist in the expected location')
         if revisions is not None:
             old_file = os.path.join(self.project.data_path, path, revisions)
             new_file = os.path.join(self.project.data_path, 'revisions_processed.csv')
             results_file = os.path.join(self.project.data_path, 'revisions_combined.csv')
-            results = pd.DataFrame()
             if os.path.isfile(old_file) and os.path.isfile(new_file):
-                results = results.append(pd.read_csv(old_file, delimiter='\t', na_filter=False))
-                results = results.append(pd.read_csv(new_file, delimiter='\t', na_filter=False))
-                results = results.drop_duplicates()
-                results.to_csv(results_file, sep='\t', index=False, header=False, mode='w')
-                del results
+                chunksize = 1000000
+                for chunk in pd.read_csv(old_file, delimiter='\t', header=None, dtype=dtype, na_filter=False, chunksize=chunksize):
+                    chunk.to_csv(results_file, sep='\t', index=False, header=False, mode='a')
+                for chunk in pd.read_csv(new_file, delimiter='\t', header=None, dtype=dtype, na_filter=False, chunksize=chunksize):
+                    chunk.to_csv(results_file, sep='\t', index=False, header=False, mode='a')
+
             else:
                 print('New or old revisions file does not exist in the expected location')
         if page_info is not None:
             old_file = os.path.join(self.project.data_path, path, page_info)
             new_file = os.path.join(self.project.data_path, 'page_info.csv')
             results_file = os.path.join(self.project.data_path, 'page_info_combined.csv')
-            results = pd.DataFrame()
             if os.path.isfile(old_file) and os.path.isfile(new_file):
-                results = results.append(pd.read_csv(old_file, delimiter='\t', na_filter=False))
-                results = results.append(pd.read_csv(new_file, delimiter='\t', na_filter=False))
-                results = results.drop_duplicates()
+                chunksize = 1000000
+                for chunk in pd.read_csv(old_file, delimiter='\t', header=None, dtype=dtype, na_filter=False, chunksize=chunksize):
+                    chunk.to_csv(results_file, sep='\t', index=False, header=False, mode='a')
+                for chunk in pd.read_csv(new_file, delimiter='\t', header=None, dtype=dtype, na_filter=False, chunksize=chunksize):
+                    chunk.to_csv(results_file, sep='\t', index=False, header=False, mode='a')
+
+                #remove duplicates
+                dtypes = {
+                    'id': int,
+                    'title': str,
+                    'ns': str,
+                    'date': str
+                }
+                print('Drop duplicates')
+                page_info = pd.read_csv(results_file, delimiter='\t', header=None,
+                                        names=['id', 'title', 'ns', 'date'], dtype=dtypes, na_filter=False)
+                results = page_info.drop_duplicates(subset=['id'], keep='first')
                 results.to_csv(results_file, sep='\t', index=False, header=False, mode='w')
-                del results
+
             else:
                 print('New or old revisions file does not exist in the expected location')
         if links is not None:
