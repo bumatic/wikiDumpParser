@@ -94,6 +94,20 @@ class ProcessorResults:
                     chunk.to_csv(results_file, sep='\t', index=False, header=False, mode='a')
                 for chunk in pd.read_csv(new_file, delimiter='\t', header=None, dtype=dtype, na_filter=False, chunksize=chunksize):
                     chunk.to_csv(results_file, sep='\t', index=False, header=False, mode='a')
+
+                #remove duplicates
+                dtypes = {
+                    'id': int,
+                    'title': str,
+                    'ns': str,
+                    'date': str
+                }
+                print('Drop duplicates')
+                page_info = pd.read_csv(results_file, delimiter='\t', header=None,
+                                        names=['id', 'title', 'ns', 'date'], dtype=dtypes, na_filter=False)
+                results = page_info.drop_duplicates(subset=['id'], keep='first')
+                results.to_csv(results_file, sep='\t', index=False, header=False, mode='w')
+
             else:
                 print('New or old revisions file does not exist in the expected location')
         if links is not None:
