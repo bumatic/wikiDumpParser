@@ -177,6 +177,7 @@ class Processor:
         page_info_results_file = os.path.join(results_base, 'page_info.csv')
         revision_info_results_file = os.path.join(results_base, 'revisions.csv')
         no_text_error_results_file = os.path.join(results_base, 'no_text_error.csv')
+        author_info_results_file = os.path.join(results_base, 'author_info.csv')
 
         results_path = os.path.join(results_base, os.path.splitext(self.file_name)[0])
         if not os.path.isdir(results_path):
@@ -192,11 +193,11 @@ class Processor:
                     for data in elem.iterchildren(reversed=False, tag='{http://www.mediawiki.org/xml/export-0.10/}ns'):
                         ns = data.text
                     if ns == '0' or ns == '14':
-                        page_info, revision_info, no_text_error = self.get_data(elem, cat_results_file,
-                                                                                link_results_file)
+                        page_info, revision_info, no_text_error, author_info = self.get_data(elem, cat_results_file, link_results_file)
                         page_info.to_csv(page_info_results_file, sep='\t', mode='a', header=False, index=False)
                         revision_info.to_csv(revision_info_results_file, sep='\t', mode='a', header=False, index=False)
                         no_text_error.to_csv(no_text_error_results_file, sep='\t', mode='a', header=False, index=False)
+                        author_info.to_csv(author_info_results_file, sep='\t', mode='a', header=False, index=False)
                     else:
                         pass
                     elem.clear()
@@ -219,17 +220,17 @@ class Processor:
 
     def get_data(self, page, cat_results_file, link_results_file):
         page_info = pd.DataFrame(columns=['page_id', 'page_title', 'page_ns', 'date_created'])
-        revision_info = pd.DataFrame(columns=['page_id', 'rev_id', 'rev_time'])
+        revision_info = pd.DataFrame(columns=['page_id', 'rev_id', 'rev_time', 'rev_author_id'])
+        author_info = pd.DataFrame(columns=['rev_author_id', 'rev_author_name'])
         no_text_error = pd.DataFrame(columns=['page_id', 'rev_id'])
         page_title = 'NULL'
         page_id = 'NULL'
         page_ns = 'NULL'
         rev_id = 'NULL'
         rev_time = 'NULL'
-        # rev_text = 'NULL'
+        rev_author_name = 'NULL'
+        rev_author_id = 'NULL'
         rev_parent = 'NULL'
-        # rev_links = []
-        # rev_cats = []
 
         # Get data for page_info
         for elem in page.iterchildren(reversed=False, tag=None):
@@ -251,6 +252,12 @@ class Processor:
                     rev_parent = elem.text
                 elif elem.tag == "{http://www.mediawiki.org/xml/export-0.10/}timestamp":
                     rev_time = elem.text
+                elif elem.tag == "{http://www.mediawiki.org/xml/export-0.10/}contributor":
+                    for elem in elem.text.iterchildren(reversed=False, tag=None):
+                        if elem.tag == "{http://www.mediawiki.org/xml/export-0.10/}username":
+                            rev_author_name = elem.text
+                        elif elem.tag == "{http://www.mediawiki.org/xml/export-0.10/}id":
+                            rev_author_id = elem.text
                 else:
                     pass
             if include:
@@ -268,7 +275,6 @@ class Processor:
                                 with open(link_results_file, 'a') as outfile:
                                     outfile.write(page_id + '\t' + rev_id + '\t' + link + '\n')
                         else:
-
                             no_text_error = no_text_error.append(pd.DataFrame([[page_id, rev_id]],
                                                                               columns=['page_id', 'rev_id']))
                         if not rev_cats == 'ERROR':
@@ -277,15 +283,17 @@ class Processor:
                                     outfile.write(page_id + '\t' + rev_id + '\t' + cat + '\n')
 
                 # Write data for revision_info
-                revision_info = revision_info.append(pd.DataFrame([[page_id, rev_id, rev_time]],
-                                                                  columns=['page_id', 'rev_id', 'rev_time']))
+                revision_info = revision_info.append(pd.DataFrame([[page_id, rev_id, rev_time, rev_author_id]],
+                                                                  columns=['page_id', 'rev_id', 'rev_time', 'rev_author_id']))
+                # Write data for author_info
+                author_info = author_info.append(pd.DataFrame([[rev_author_id, rev_author_name]],
+                                                              columns=['rev_author_id', 'rev_author_name']))
 
             # Write data for page_info, include time of the first revision for the creation time of the page
             if rev_parent == 'NULL':
-
                 page_info = page_info.append(pd.DataFrame([[page_id, page_title, page_ns, rev_time]],
                                                           columns=['page_id', 'page_title', 'page_ns', 'date_created']))
-        return page_info, revision_info, no_text_error
+        return page_info, revision_info, no_text_error, author_info
 
     # Returns two lists (cats and links) containing each only links to articles and links to categories
     @staticmethod
