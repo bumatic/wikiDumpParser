@@ -253,11 +253,11 @@ class Processor:
                 elif elem.tag == "{http://www.mediawiki.org/xml/export-0.10/}timestamp":
                     rev_time = elem.text
                 elif elem.tag == "{http://www.mediawiki.org/xml/export-0.10/}contributor":
-                    for elem in elem.text.iterchildren(reversed=False, tag=None):
-                        if elem.tag == "{http://www.mediawiki.org/xml/export-0.10/}username":
-                            rev_author_name = elem.text
-                        elif elem.tag == "{http://www.mediawiki.org/xml/export-0.10/}id":
-                            rev_author_id = elem.text
+                    for item in elem.iterchildren(reversed=False, tag=None):
+                        if item.tag == "{http://www.mediawiki.org/xml/export-0.10/}username":
+                            rev_author_name = item.text
+                        elif item.tag == "{http://www.mediawiki.org/xml/export-0.10/}id":
+                            rev_author_id = item.text
                 else:
                     pass
             if include:

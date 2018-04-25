@@ -109,3 +109,5 @@ ENV/
 .mypy_cache/
 wikiDumpParser/.DS_Store
 wikiDumpParser/.DS_Store
+dp_handle_results_test.py
+dp_test_run.py

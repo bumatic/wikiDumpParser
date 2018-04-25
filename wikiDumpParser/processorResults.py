@@ -19,6 +19,7 @@ class ProcessorResults:
         self.update_revisions_file()
         self.group_links_files()
         self.group_page_info()
+        self.remove_duplicate_authors()
 
     def assemble_cat_results(self):
         for key, value in tqdm(self.project.pinfo['dump'].items(), desc='Assemble category results in one file:'):
@@ -30,6 +31,13 @@ class ProcessorResults:
             results = os.path.join(self.project.data_path, 'cats_all.csv')
             data.to_csv(results, sep='\t', index=False, header=False, mode='a')
             os.remove(os.path.join(path, f))
+
+    def remove_duplicate_authors(self):
+        authors_file = os.path.join(self.project.results_path, 'author_info.csv')
+        authors = pd.read_csv(authors_file, delimiter='\t', names=['id', 'name'])
+        relevant_authors = authors.drop_duplicates()
+        results = os.path.join(self.project.data_path, 'author_info_processed.csv')
+        relevant_authors.to_csv(results, sep='\t', index=False, header=False, mode='w')
 
     def update_revisions_file(self):
         relevant_revs_file = os.path.join(self.project.results_path, 'relevant_revisions.csv')
