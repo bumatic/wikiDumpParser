@@ -223,6 +223,7 @@ class Processor:
         self.load_templates(self.file_name, template_file)
         template_load_elapsed = default_timer() - template_load_start
         logging.info("Loaded %d templates in %.1fs", len(self.options.templates), template_load_elapsed)
+        os.remove(os.path.join(self.data_path, self.file_name))
         return True
 
     @staticmethod
