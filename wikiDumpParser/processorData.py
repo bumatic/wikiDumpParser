@@ -35,7 +35,7 @@
 # =============================================================================
 
 
-
+from __future__ import unicode_literals, division
 import os
 from pyunpack import Archive
 import requests
@@ -44,7 +44,6 @@ from xml.sax import parse
 from xml.sax.saxutils import XMLGenerator
 import numpy as np
 from lxml import etree
-import re
 import shutil
 import glob
 import subprocess
@@ -53,7 +52,6 @@ import pandas as pd
 import hashlib
 import random
 import time
-from __future__ import unicode_literals, division
 import codecs
 import fileinput
 import logging
