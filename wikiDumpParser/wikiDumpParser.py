@@ -197,7 +197,7 @@ class Project:
 
     def cleanup(self):
         for key, value in self.pinfo['dump'].items():
-            if value in ['download_started', 'splitting_started', 'parsed_started', 'postprocessing_started']:
+            if value in ['preprocessing_started','download_started', 'splitting_started', 'parsed_started', 'postprocessing_started']:
                 # remove downloaded file: rest to error
                 try:
                     shutil.rmtree(os.path.join(self.data_path, key[:-3]))
