@@ -216,6 +216,7 @@ class Processor:
         :param input_file: wikipedia dump file
         :param template_file: optional file with template definitions.
         """
+        self.unpack()
         template_load_start = default_timer()
         logging.info("Preprocessing '%s' to collect template definitions: this may take some time.", self.file_name)
         template_file = os.path.join(self.data_path_base, 'templates', self.file_name)
