@@ -189,7 +189,7 @@ class Processor:
 
     def preprocess(self):
         quiet = False
-        debug = True
+        debug = False
         self.createLogger(quiet, debug)
 
         if self.status == 'init':
@@ -219,7 +219,7 @@ class Processor:
         self.unpack()
         template_load_start = default_timer()
         logging.info("Preprocessing '%s' to collect template definitions: this may take some time.", self.file_name)
-        template_file = os.path.join(self.data_path_base, 'templates', self.file_name)
+        template_file = os.path.join(self.data_path_base, 'templates', self.file_name[:-3])
         self.load_templates(self.file_name, template_file)
         template_load_elapsed = default_timer() - template_load_start
         logging.info("Loaded %d templates in %.1fs", len(self.options.templates), template_load_elapsed)
