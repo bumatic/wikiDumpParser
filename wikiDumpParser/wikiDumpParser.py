@@ -8,17 +8,20 @@ from wikiDumpParser.processorData import *
 from wikiDumpParser.processorResults import *
 from joblib import Parallel, delayed
 
-
+# ToDo: Implement Parsing of Templates and associated Categories
+# ToDo: Implement Parsing of which templates are assigned to 
 class Project:
     def __init__(self, path='project'):
         self.path = path
         self.data_path = os.path.join(self.path, 'data')
         self.results_path = os.path.join(self.data_path, 'results')
+        self.templates_path = os.path.join(self.data_path, 'templates')
         self.tmp_status_path = os.path.join(self.data_path, 'tmp_status')
         self.pinfo = {}
         self.pinfo_file = os.path.join(self.path, '_project_info.json')
         self.pinfo['start_date'] = parser.parse('1990-01-01').timestamp()
         self.pinfo['parallel_processes'] = 1
+        self.pinfo['templates'] = False
 
     def create_project(self, start_date=None, dump_date=None):
         if not os.path.isdir(os.path.join(os.getcwd(), self.path)):
@@ -27,11 +30,12 @@ class Project:
             os.makedirs(os.path.join(os.getcwd(), self.data_path))
         if not os.path.isdir(os.path.join(os.getcwd(), self.tmp_status_path)):
             os.makedirs(os.path.join(os.getcwd(), self.tmp_status_path))
+        if not os.path.isdir(os.path.join(os.getcwd(), self.templates_path)):
+            os.makedirs(os.path.join(os.getcwd(), self.templates_path))
         if start_date is not None:
             self.pinfo['start_date'] = parser.parse(start_date).timestamp()
         if dump_date is not None:
             self.pinfo['dump_date'] = parser.parse(dump_date).timestamp()
-
         if os.path.exists(self.pinfo_file):
             print('A project already exists in this location. Try loading or change location for new project.')
         else:
@@ -213,6 +217,7 @@ class Project:
                 self.pinfo['dump'][key] = 'init'
                 self.save_project()
 
+
     def process(self):
         '''
         process_order = ['done',
@@ -239,7 +244,7 @@ class Project:
             print('Call next Processor for ' + status + ' file: ' + f)
             if status == 'init':
                 tmp_status = 'download_started'
-            if status == 'downloaded':
+            if status == 'downloaded' or 'preprocessed':
                 tmp_status = 'splitting_started'
                 # os.path.join(self.data_path, f[:-3])
             if status == 'split':
@@ -259,3 +264,32 @@ class Project:
     def combine_old_and_new(self, path=None, cats=None, links=None, page_info=None, revisions=None):
         ProcessorResults(self).combine_old_and_new(path=path, cats=cats, links=links,
                                                    page_info=page_info, revisions=revisions)
+
+    def get_templates(self):
+        if 'dump' not in self.pinfo.keys():
+            print('No dump file info has been added to the project yet – use: '
+                  'Project.add_dump_file_info(self, file_list, base_url)')
+            return
+        if self.pinfo['templates']:
+            print('Template files have already been assembled.')
+            return
+
+        self.update_status()
+        self.cleanup()
+        Parallel(n_jobs=self.pinfo['parallel_processes'])\
+            (delayed(self.preprocess_file)(f, status) for f, status in self.pinfo['dump'].items())
+
+    def preprocess_file(self, f, status):
+        while status != 'preprocessed':
+            if status == 'error':
+                return
+            print('Call next Processor for ' + status + ' file: ' + f)
+            if status == 'init':
+                tmp_status = 'download_started'
+            if status == 'downloaded':
+                tmp_status = 'preprocessing_started'
+            self.save_tmp_status(f[:-3], tmp_status)
+            status = Processor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date'],
+                               self.pinfo['md5'][f]).preprocess()
+            self.save_tmp_status(f[:-3], status)
+

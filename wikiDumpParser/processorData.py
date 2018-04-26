@@ -1,3 +1,41 @@
+# =============================================================================
+# Preprocessing adapted from wikiextractor Version: 2.75 (March 4, 2017)
+# https://github.com/attardi/wikiextractor
+#
+#  By:
+#  Author: Giuseppe Attardi (attardi@di.unipi.it), University of Pisa
+#
+#  Contributors:
+#   Antonio Fuschetto (fuschett@aol.com)
+#   Leonardo Souza (lsouza@amtera.com.br)
+#   Juan Manuel Caicedo (juan@cavorite.com)
+#   Humberto Pereira (begini@gmail.com)
+#   Siegfried-A. Gevatter (siegfried@gevatter.com)
+#   Pedro Assis (pedroh2306@gmail.com)
+#   Wim Muskee (wimmuskee@gmail.com)
+#   Radics Geza (radicsge@gmail.com)
+#   orangain (orangain@gmail.com)
+#   Seth Cleveland (scleveland@turnitin.com)
+#   Bren Barn
+#
+# =============================================================================
+#  Copyright (c) 2011-2017. Giuseppe Attardi (attardi@di.unipi.it).
+# =============================================================================
+#  This file is part of Tanl.
+#
+#  Tanl is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU General Public License, version 3,
+#  as published by the Free Software Foundation.
+#
+#  Tanl is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License at <http://www.gnu.org/licenses/> for more details.
+#
+# =============================================================================
+
+
+
 import os
 from pyunpack import Archive
 import requests
@@ -15,6 +53,14 @@ import pandas as pd
 import hashlib
 import random
 import time
+from __future__ import unicode_literals, division
+import codecs
+import fileinput
+import logging
+import re  # TODO use regex when it will be standard
+from timeit import default_timer
+from html.entities import name2codepoint
+from types import SimpleNamespace
 
 
 class Processor:
@@ -100,6 +146,297 @@ class Processor:
             # TITLE: Wikipedia:Teahouse , NS: 4
             34745517
         ]
+        self.options = SimpleNamespace(
+            ##
+            # The namespace used for template definitions
+            # It is the name associated with namespace key=10 in the siteinfo header.
+            templateNamespace='',
+            templatePrefix='',
+
+            ##
+            # The namespace used for module definitions
+            # It is the name associated with namespace key=828 in the siteinfo header.
+            moduleNamespace='',
+            modulePrefix='',
+
+            ##
+            # Shared objects holding templates, redirects and cache
+            templates={},
+            redirects={},
+        )
+        self.text_type = str
+
+        ##
+        # Keys for Template and Module namespaces
+        self.templateKeys = set(['10', '828'])
+
+        ##
+        # Regex for identifying disambig pages
+        self.filter_disambig_page_pattern = re.compile("{{disambig(uation)?(\|[^}]*)?}}")
+
+        # Match HTML comments
+        # The buggy template {{Template:T}} has a comment terminating with just "->"
+        self.comment = re.compile(r'<!--.*?-->', re.DOTALL)
+
+        # Match <nowiki>...</nowiki>
+        self.nowiki = re.compile(r'<nowiki>.*?</nowiki>')
+
+        # Extract Template definition
+        self.reNoinclude = re.compile(r'<noinclude>(?:.*?)</noinclude>', re.DOTALL)
+        self.reIncludeonly = re.compile(r'<includeonly>|</includeonly>', re.DOTALL)
+
+        self.tagRE = re.compile(r'(.*?)<(/?\w+)[^>]*?>(?:([^<]*)(<.*?>)?)?')
+        #                           1       2              3       4
+        self.keyRE = re.compile(r'key="(\d*)"')
+
+    def preprocess(self):
+        quiet = False
+        debug = True
+        self.createLogger(quiet, debug)
+
+        if self.status == 'init':
+            success = self.download_dump_file()
+            if success:
+                new_status = 'downloaded'
+                return new_status
+            else:
+                new_status = 'init'
+                print('Download error. Waiting 60 to 120 seconds to restart.')
+                time.sleep(random.randint(60, 120))
+                return new_status
+        if self.status == 'downloaded':
+            # ONCE IMPLEMENTE NEW_STATUS NEEDS TO BE SET TO NEXT.
+            # While not everything is IMPLEMENTED THIS LEADS TO INFINITE LOOP
+            success = self.get_templates()
+            if success:
+                new_status = 'preprocessed'
+                return new_status
+
+    def get_templates(self):
+        #def get_templates(input_file, template_file):
+        """
+        :param input_file: wikipedia dump file
+        :param template_file: optional file with template definitions.
+        """
+        template_load_start = default_timer()
+        logging.info("Preprocessing '%s' to collect template definitions: this may take some time.", self.file_name)
+        template_file = os.path.join(self.data_path_base, 'templates', self.file_name)
+        self.load_templates(self.file_name, template_file)
+        template_load_elapsed = default_timer() - template_load_start
+        logging.info("Loaded %d templates in %.1fs", len(self.options.templates), template_load_elapsed)
+        return True
+
+    @staticmethod
+    def unescape(text):
+        """
+        Removes HTML or XML character references and entities from a text string.
+
+        :param text The HTML (or XML) source text.
+        :return The plain text, as a Unicode string, if necessary.
+        """
+
+        def fixup(m):
+            text = m.group(0)
+            code = m.group(1)
+            try:
+                if text[1] == "#":  # character reference
+                    if text[2] == "x":
+                        return chr(int(code[1:], 16))
+                    else:
+                        return chr(int(code))
+                else:  # named entity
+                    return chr(name2codepoint[code])
+            except:
+                return text  # leave as is
+
+        return re.sub("&#?(\w+);", fixup, text)
+
+    def define_template(self, title, page):
+        """
+        Adds a template defined in the :param page:.
+        @see https://en.wikipedia.org/wiki/Help:Template#Noinclude.2C_includeonly.2C_and_onlyinclude
+        """
+        # title = normalizeTitle(title)
+
+        # sanity check (empty template, e.g. Template:Crude Oil Prices))
+        if not page:
+            return
+
+        # check for redirects
+        m = re.match('#REDIRECT.*?\[\[([^\]]*)]]', page[0], re.IGNORECASE)
+        if m:
+            self.options.redirects[title] = m.group(1)  # normalizeTitle(m.group(1))
+            return
+
+        text = self.unescape(''.join(page))
+        # We're storing template text for future inclusion, therefore,
+        # remove all <noinclude> text and keep all <includeonly> text
+        # (but eliminate <includeonly> tags per se).
+        # However, if <onlyinclude> ... </onlyinclude> parts are present,
+        # then only keep them and discard the rest of the template body.
+        # This is because using <onlyinclude> on a text fragment is
+        # equivalent to enclosing it in <includeonly> tags **AND**
+        # enclosing all the rest of the template body in <noinclude> tags.
+
+        # remove comments
+        text = self.comment.sub('', text)
+
+        # eliminate <noinclude> fragments
+        text = self.reNoinclude.sub('', text)
+        # eliminate unterminated <noinclude> elements
+        text = re.sub(r'<noinclude\s*>.*$', '', text, flags=re.DOTALL)
+        text = re.sub(r'<noinclude/>', '', text)
+
+        onlyincludeAccumulator = ''
+        for m in re.finditer('<onlyinclude>(.*?)</onlyinclude>', text, re.DOTALL):
+            onlyincludeAccumulator += m.group(1)
+        if onlyincludeAccumulator:
+            text = onlyincludeAccumulator
+        else:
+            text = self.reIncludeonly.sub('', text)
+
+        if text:
+            if title in self.options.templates:
+                logging.warning('Redefining: %s', title)
+            self.options.templates[title] = text
+
+    def pages_from(self, input):
+        """
+        Scans input extracting pages.
+        :return: (id, revid, title, namespace key, page), page is a list of lines.
+        """
+        # we collect individual lines, since str.join() is significantly faster
+        # than concatenation
+
+        page = []
+        id = None
+        ns = '0'
+        last_id = None
+        revid = None
+        inText = False
+        redirect = False
+        title = None
+        logging.debug('Parsing input %s', input)
+        last_tag = None
+        for line in input:
+            if not isinstance(line, self.text_type): line = line.decode('utf-8')
+            if '<' not in line:  # faster than doing re.search()
+                if inText:
+                    page.append(line)
+                continue
+            m = self.tagRE.search(line)
+            if not m:
+                continue
+            tag = m.group(2)
+            if tag == 'page':
+                page = []
+                redirect = False
+            elif tag == 'id' and not id:
+                id = m.group(3)
+            elif tag == 'id' and id and last_tag != 'username':
+                revid = m.group(3)
+            elif tag == 'title':
+                title = m.group(3)
+            elif tag == 'ns':
+                ns = m.group(3)
+            elif tag == 'redirect':
+                redirect = True
+            elif tag == 'revision':
+                page.append('<revision>\n')
+            elif tag == '/revision':
+                page.append('</revision>\n')
+            elif tag == 'timestamp':
+                timestamp = m.group(3)
+                page.append('<timestamp>%s</timestamp>\n' % timestamp)  # <ns>%s</ns>\n' % ns
+                # page.append(timestamp)
+                # page.append('</timestamp>\n')
+            elif tag == 'username':
+                username = m.group(3)
+            elif tag == 'id' and last_tag == 'username':
+                uid = m.group(3)
+                page.append('<contributor>\n')
+                page.append('<username>%s</username>\n' % username)
+                # page.append(username)
+                # page.append('</username>')
+                page.append('<id>%s</id>\n' % uid)
+                # page.append(uid)
+                # page.append('</id>')
+                page.append('</contributor>\n')
+                del username
+                del uid
+            elif tag == 'text':
+                if m.lastindex == 3 and line[m.start(3) - 2] == '/':  # self closing
+                    # <text xml:space="preserve" />
+                    continue
+                else:
+                    page.append('<text xml:space="preserve" />\n')
+                inText = True
+                line = line[m.start(3):m.end(3)]
+                page.append(line)
+                if m.lastindex == 4:  # open-close
+                    inText = False
+            elif tag == '/text':
+                if m.group(1):
+                    page.append(m.group(1))
+                page.append('</text>\n')
+                inText = False
+            elif inText:
+                page.append(line)
+            elif tag == '/page':
+                if id != last_id and not redirect:
+                    yield (id, revid, title, ns, page)
+                    last_id = id
+                    ns = '0'
+                id = None
+                revid = None
+                title = None
+                page = []
+            last_tag = tag
+
+    def load_templates(self, input_file, output_file=None):
+        """
+        Load templates from :param file:.
+        :param output_file: file where to save templates and modules.
+        """
+        # pages_from()
+        # page_data??
+        # define_template()
+
+        input = fileinput.FileInput(input_file, openhook=fileinput.hook_compressed)
+
+        self.options.templatePrefix = self.options.templateNamespace + ':'
+        self.options.modulePrefix = self.options.moduleNamespace + ':'
+
+        if output_file:
+            logging.debug('Output file %s for template in %s created', output_file, input_file)
+            output = codecs.open(output_file, 'wb', 'utf-8')
+        for page_count, page_data in enumerate(self.pages_from(input)):
+            id, revid, title, ns, page = page_data
+            if ns in self.templateKeys:
+                text = ''.join(page)
+                self.define_template(title, text)
+                # save templates and modules to file
+                if output_file:
+                    output.write('<page>\n')
+                    output.write('   <title>%s</title>\n' % title)
+                    output.write('   <ns>%s</ns>\n' % ns)
+                    output.write('   <id>%s</id>\n' % id)
+                    for line in page:
+                        output.write(line)
+                    output.write('</page>\n')
+            if page_count and page_count % 100000 == 0:
+                logging.info("Preprocessed %d pages", page_count)
+        if output_file:
+            output.close()
+            logging.info("Saved %d templates to '%s'", len(self.options.templates), output_file)
+
+    @staticmethod
+    def createLogger(quiet, debug):
+        logger = logging.getLogger()
+        if not quiet:
+            logger.setLevel(logging.INFO)
+        if debug:
+            logger.setLevel(logging.DEBUG)
 
     def process(self):
         if self.status == 'init':
