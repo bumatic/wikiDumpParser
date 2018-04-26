@@ -412,6 +412,7 @@ class Processor:
             logging.debug('Output file %s for template in %s created', output_file, input_file)
             output = codecs.open(output_file, 'wb', 'utf-8')
         for page_count, page_data in enumerate(self.pages_from(input)):
+            print('hier')
             id, revid, title, ns, page = page_data
             if ns in self.templateKeys:
                 text = ''.join(page)
