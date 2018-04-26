@@ -412,7 +412,6 @@ class Processor:
             logging.debug('Output file %s for template in %s created', output_file, input_file)
             output = codecs.open(output_file, 'wb', 'utf-8')
         for page_count, page_data in enumerate(self.pages_from(input)):
-            print('hier')
             id, revid, title, ns, page = page_data
             if ns in self.templateKeys:
                 text = ''.join(page)
@@ -426,7 +425,8 @@ class Processor:
                     for line in page:
                         output.write(line)
                     output.write('</page>\n')
-            if page_count and page_count % 100000 == 0:
+            if page_count and page_count % 1000 == 0:
+            #if page_count and page_count % 100000 == 0:
                 logging.info("Preprocessed %d pages", page_count)
         if output_file:
             output.close()
