@@ -297,7 +297,7 @@ class Project:
         while status != 'preprocessed':
             if status == 'error':
                 return
-            #self.logger.info("%s: %s. Go to next step.", status, f)
+            logging.info("%s: %s. Go to next step.", status, f)
             if status == 'init':
                 tmp_status = 'download_started'
             if status == 'downloaded':
