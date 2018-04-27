@@ -2,7 +2,7 @@ import os
 import json
 import pandas as pd
 import shutil
-import logging
+#import logging
 from dateutil import parser
 
 from datetime import datetime
@@ -309,17 +309,17 @@ class Project:
     def createLogger(self, quiet, debug):
         self.logger = logging.getLogger()
         if not quiet:
-            logger.setLevel(logging.INFO)
-        if debug:
-            logger.setLevel(logging.DEBUG)
-
-    def set_logging_level(self, quiet=False, debug=False):
-        self.pinfo['logging']['quiet'] = False
-        self.pinfo['logging']['debug'] = False
-        self.save_project()
-        if not quiet:
             self.logger.setLevel(logging.INFO)
         if debug:
+            self.logger.setLevel(logging.DEBUG)
+
+    def set_logging_level(self, quiet=False, debug=False):
+        self.pinfo['logging']['quiet'] = quiet
+        self.pinfo['logging']['debug'] = debug
+        self.save_project()
+        if not self.pinfo['logging']['quiet']:
+            self.logger.setLevel(logging.INFO)
+        if self.pinfo['logging']['debug']:
             self.logger.setLevel(logging.DEBUG)
         self.logger.info("Logging level has been set to quiet == '%s' and debug == '%s'", quiet, debug)
 
