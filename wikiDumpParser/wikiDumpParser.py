@@ -313,7 +313,7 @@ class Project:
         if debug:
             logger.setLevel(logging.DEBUG)
 
-        print(logger)
+        print(logger.info())
         return logger
 
     def set_logging_level(self, quiet=False, debug=False):
