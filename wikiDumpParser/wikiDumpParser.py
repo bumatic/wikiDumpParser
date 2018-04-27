@@ -309,9 +309,9 @@ class Project:
     def createLogger(self, quiet, debug):
         logger = logging.getLogger()
         if not quiet:
-            logger.setLevel(logger.INFO)
+            logging.setLevel(logging.INFO)
         if debug:
-            logger.setLevel(logger.DEBUG)
+            logger.setLevel(logging.DEBUG)
 
         print(logger)
         return logger
@@ -321,9 +321,9 @@ class Project:
         self.pinfo['logging']['debug'] = False
         self.save_project()
         if not quiet:
-            self.logger.setLevel(logger.INFO)
+            self.logger.setLevel(logging.INFO)
         if debug:
-            self.logger.setLevel(logger.DEBUG)
+            self.logger.setLevel(logging.DEBUG)
         self.logger.info("Logging level has been set to quiet == '%s' and debug == '%s'", quiet, debug)
 
 
