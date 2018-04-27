@@ -443,8 +443,7 @@ class PreProcessor:
             return True
         else:
             os.remove(os.path.join(self.data_path, self.file_name))
-            #logging.info("Downloading '%s' failed. Retry later.",
-                             self.file_name)
+            #logging.info("Downloading '%s' failed. Retry later.", self.file_name)
             return False
 
     @staticmethod
