@@ -195,7 +195,7 @@ class PreProcessor:
             else:
                 new_status = 'init'
                 #logging.info("Problem downloading '%s'. Retrying in 60 to 120 seconds.",
-                                 self.file_name)
+                #                 self.file_name)
                 time.sleep(random.randint(60, 120))
                 return new_status
         if self.status == 'downloaded':
@@ -424,6 +424,7 @@ class PreProcessor:
             if page_count and page_count % 1000 == 0:
             #if page_count and page_count % 100000 == 0:
                 #logging.info("Preprocessed %d pages", page_count)
+                pass
         if output_file:
             output.close()
             #logging.info("Saved %d templates to '%s'", len(self.options.templates), output_file)
@@ -439,7 +440,7 @@ class PreProcessor:
         new_md5 = self.get_md5(os.path.join(self.data_path, self.file_name))
         if new_md5 == self.md5:
             #logging.info("Successfully downloaded '%s'.",
-                             self.file_name)
+            #                 self.file_name)
             return True
         else:
             os.remove(os.path.join(self.data_path, self.file_name))
