@@ -307,12 +307,13 @@ class Project:
             self.save_tmp_status(f[:-3], status)
 
     def createLogger(self, quiet, debug):
-        print('hier')
         logger = logging.getLogger()
         if not quiet:
-            logger.setLevel(logging.INFO)
+            logger.setLevel(logger.INFO)
         if debug:
-            logger.setLevel(logging.DEBUG)
+            logger.setLevel(logger.DEBUG)
+
+        print(logger)
         return logger
 
     def set_logging_level(self, quiet=False, debug=False):
@@ -320,9 +321,9 @@ class Project:
         self.pinfo['logging']['debug'] = False
         self.save_project()
         if not quiet:
-            self.logger.setLevel(logging.INFO)
+            self.logger.setLevel(logger.INFO)
         if debug:
-            self.logger.setLevel(logging.DEBUG)
+            self.logger.setLevel(logger.DEBUG)
         self.logger.info("Logging level has been set to quiet == '%s' and debug == '%s'", quiet, debug)
 
 
