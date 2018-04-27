@@ -5,6 +5,7 @@ import pandas as pd
 import shutil
 import logging
 from dateutil import parser
+import dill
 
 from datetime import datetime
 from wikiDumpParser.preprocessorData import *

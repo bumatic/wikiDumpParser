@@ -50,6 +50,7 @@ import re  # TODO use regex when it will be standard
 from timeit import default_timer
 from html.entities import name2codepoint
 from types import SimpleNamespace
+import dill
 
 
 class PreProcessor:
