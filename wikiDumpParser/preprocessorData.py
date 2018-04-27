@@ -294,8 +294,9 @@ class PreProcessor:
 
         if text:
             if title in self.options.templates:
-                #logging.warning('Redefining: %s', title)
+                # logging.warning('Redefining: %s', title)
                 pass
+
             self.options.templates[title] = text
 
     def pages_from(self, input):
