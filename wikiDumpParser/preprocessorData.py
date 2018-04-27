@@ -292,7 +292,7 @@ class PreProcessor:
 
         if text:
             if title in self.options.templates:
-                self.logger.warning('Redefining: %s', title)
+                logging.warning('Redefining: %s', title)
             self.options.templates[title] = text
 
     def pages_from(self, input):
@@ -311,7 +311,7 @@ class PreProcessor:
         inText = False
         redirect = False
         title = None
-        self.logger.debug('Parsing input %s', input)
+        logging.debug('Parsing input %s', input)
         last_tag = None
         for line in input:
             if not isinstance(line, self.text_type): line = line.decode('utf-8')
@@ -403,7 +403,7 @@ class PreProcessor:
         self.options.modulePrefix = self.options.moduleNamespace + ':'
 
         if output_file:
-            self.logger.debug('Output file %s for template in %s created', output_file, input_file)
+            logging.debug('Output file %s for template in %s created', output_file, input_file)
             output = codecs.open(output_file, 'wb', 'utf-8')
         for page_count, page_data in enumerate(self.pages_from(input)):
             id, revid, title, ns, page = page_data
@@ -421,7 +421,7 @@ class PreProcessor:
                     output.write('</page>\n')
             if page_count and page_count % 1000 == 0:
             #if page_count and page_count % 100000 == 0:
-                self.logger.info("Preprocessed %d pages", page_count)
+                logging.info("Preprocessed %d pages", page_count)
         if output_file:
             output.close()
             logging.info("Saved %d templates to '%s'", len(self.options.templates), output_file)
@@ -436,12 +436,12 @@ class PreProcessor:
                 handle.write(data)
         new_md5 = self.get_md5(os.path.join(self.data_path, self.file_name))
         if new_md5 == self.md5:
-            self.logger.info("Successfully downloaded '%s'.",
+            logging.info("Successfully downloaded '%s'.",
                              self.file_name)
             return True
         else:
             os.remove(os.path.join(self.data_path, self.file_name))
-            self.logger.info("Downloading '%s' failed. Retry later.",
+            logging.info("Downloading '%s' failed. Retry later.",
                              self.file_name)
             return False
 
@@ -455,4 +455,4 @@ class PreProcessor:
 
     def unpack(self):
         Archive(os.path.join(self.data_path, self.file_name)).extractall(os.path.join(os.getcwd(), self.data_path))
-        self.logger.info("Unpacked file '%s'.", self.file_name)
+        logging.info("Unpacked file '%s'.", self.file_name)
