@@ -1,9 +1,10 @@
 import os
 import json
-import logging
 import pandas as pd
 import shutil
+import logging
 from dateutil import parser
+
 from datetime import datetime
 from wikiDumpParser.preprocessorData import *
 from wikiDumpParser.processorData import *
@@ -305,8 +306,8 @@ class Project:
                                self.pinfo['md5'][f], self.logger).preprocess()
             self.save_tmp_status(f[:-3], status)
 
-    @staticmethod
-    def createLogger(quiet, debug):
+    def createLogger(self, quiet, debug):
+        print(hier)
         logger = logging.getLogger()
         if not quiet:
             logger.setLevel(logging.INFO)
