@@ -30,7 +30,7 @@ class Project:
         self.pinfo['logging'] = {}
         self.pinfo['logging']['quiet'] = False
         self.pinfo['logging']['debug'] = False
-        self.createLogger(self.pinfo['logging']['quiet'], self.pinfo['logging']['debug'])
+        #self.createLogger(self.pinfo['logging']['quiet'], self.pinfo['logging']['debug'])
 
     def create_project(self, start_date=None, dump_date=None):
         if not os.path.isdir(os.path.join(os.getcwd(), self.path)):
@@ -46,8 +46,8 @@ class Project:
         if dump_date is not None:
             self.pinfo['dump_date'] = parser.parse(dump_date).timestamp()
         if os.path.exists(self.pinfo_file):
-            logging.info("A project already exists in '%s'. Try loading this project or "
-                         "change location for new project.", self.path)
+            #logging.info("A project already exists in '%s'. Try loading this project or "
+            #             "change location for new project.", self.path)
         else:
             self.save_project()
 
@@ -57,7 +57,7 @@ class Project:
                 self.pinfo = json.load(info_file)
             info_file.close()
         self.update_status()
-        self.set_logging_level(self.pinfo['logging']['quiet'], self.pinfo['logging']['quiet'])
+        #self.set_logging_level(self.pinfo['logging']['quiet'], self.pinfo['logging']['quiet'])
 
         #self.logger = self.createLogger(self.pinfo['logging']['quiet'], self.pinfo['logging']['quiet'])
 
@@ -307,20 +307,24 @@ class Project:
             self.save_tmp_status(f[:-3], status)
 
     def createLogger(self, quiet, debug):
-        self.logger = logging.getLogger()
+        #self.logger = logging.getLogger()
         if not quiet:
-            self.logger.setLevel(logging.INFO)
+            #self.logger.setLevel(logging.INFO)
+            pass
         if debug:
-            self.logger.setLevel(logging.DEBUG)
+            #self.logger.setLevel(logging.DEBUG)
+            pass
 
     def set_logging_level(self, quiet=False, debug=False):
         self.pinfo['logging']['quiet'] = quiet
         self.pinfo['logging']['debug'] = debug
         self.save_project()
         if not self.pinfo['logging']['quiet']:
-            self.logger.setLevel(logging.INFO)
+            #self.logger.setLevel(logging.INFO)
+            pass
         if self.pinfo['logging']['debug']:
-            self.logger.setLevel(logging.DEBUG)
-        logging.info("Logging level has been set to quiet == '%s' and debug == '%s'", quiet, debug)
+            #self.logger.setLevel(logging.DEBUG)
+            pass
+        #logging.info("Logging level has been set to quiet == '%s' and debug == '%s'", quiet, debug)
 
 
