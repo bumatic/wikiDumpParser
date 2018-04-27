@@ -30,8 +30,8 @@ class Project:
         self.pinfo['logging'] = {}
         self.pinfo['logging']['quiet'] = False
         self.pinfo['logging']['debug'] = False
-        self.logger = logging.getLogger()
-        self.set_logging_level(self.pinfo['logging']['quiet'], self.pinfo['logging']['debug'])
+        self.logger = None
+        self.createLogger(self.pinfo['logging']['quiet'], self.pinfo['logging']['debug'])
 
     def create_project(self, start_date=None, dump_date=None):
         if not os.path.isdir(os.path.join(os.getcwd(), self.path)):
@@ -306,7 +306,7 @@ class Project:
             status = PreProcessor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date'], self.pinfo['md5'][f]).preprocess()  # , self.logger
             self.save_tmp_status(f[:-3], status)
 
-    '''
+
     def createLogger(self, quiet, debug):
         self.logger = logging.getLogger()
         if not quiet:
@@ -315,8 +315,8 @@ class Project:
         if debug:
             self.logger.setLevel(logging.DEBUG)
             pass
-    '''
-    
+
+
     def set_logging_level(self, quiet=False, debug=False):
         self.pinfo['logging']['quiet'] = quiet
         self.pinfo['logging']['debug'] = debug
@@ -327,6 +327,6 @@ class Project:
         if self.pinfo['logging']['debug']:
             self.logger.setLevel(logging.DEBUG)
             pass
-        #logging.info("Logging level has been set to quiet == '%s' and debug == '%s'", quiet, debug)
+        logging.info("Logging level has been set to quiet == '%s' and debug == '%s'", quiet, debug)
 
 
