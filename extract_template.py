@@ -43,7 +43,7 @@ import bz2
 import codecs
 import cgi
 import fileinput
-import logging
+#import logging
 import os.path
 import re  # TODO use regex when it will be standard
 import time

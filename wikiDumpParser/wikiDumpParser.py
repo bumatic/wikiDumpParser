@@ -1,8 +1,9 @@
+from __future__ import unicode_literals, division
 import os
 import json
 import pandas as pd
 import shutil
-#import logging
+import logging
 from dateutil import parser
 
 from datetime import datetime
@@ -44,8 +45,8 @@ class Project:
         if dump_date is not None:
             self.pinfo['dump_date'] = parser.parse(dump_date).timestamp()
         if os.path.exists(self.pinfo_file):
-            self.logger.info("A project already exists in '%s'. Try loading this project or "
-                             "change location for new project.", self.path)
+            logging.info("A project already exists in '%s'. Try loading this project or "
+                         "change location for new project.", self.path)
         else:
             self.save_project()
 
@@ -321,6 +322,6 @@ class Project:
             self.logger.setLevel(logging.INFO)
         if self.pinfo['logging']['debug']:
             self.logger.setLevel(logging.DEBUG)
-        self.logger.info("Logging level has been set to quiet == '%s' and debug == '%s'", quiet, debug)
+        logging.info("Logging level has been set to quiet == '%s' and debug == '%s'", quiet, debug)
 
 

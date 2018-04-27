@@ -191,7 +191,7 @@ class PreProcessor:
                 return new_status
             else:
                 new_status = 'init'
-                self.logger.info("Problem downloading '%s'. Retrying in 60 to 120 seconds.",
+                logging.info("Problem downloading '%s'. Retrying in 60 to 120 seconds.",
                                  self.file_name)
                 time.sleep(random.randint(60, 120))
                 return new_status
@@ -212,11 +212,11 @@ class PreProcessor:
 
         self.unpack()
         template_load_start = default_timer()
-        self.logger.info("Preprocessing '%s' to collect template definitions: this may take some time.", self.file_name)
+        logging.info("Preprocessing '%s' to collect template definitions: this may take some time.", self.file_name)
         template_file = os.path.join(self.data_path_base, 'templates', self.file_name[:-3])
         self.load_templates(os.path.join(self.data_path, self.file_name[:-3]), template_file)
         template_load_elapsed = default_timer() - template_load_start
-        self.logger.info("Loaded %d templates in %.1fs", len(self.options.templates), template_load_elapsed)
+        logging.info("Loaded %d templates in %.1fs", len(self.options.templates), template_load_elapsed)
         os.remove(os.path.join(self.data_path, self.file_name[:-3]))
         return True
 
@@ -423,7 +423,7 @@ class PreProcessor:
                 self.logger.info("Preprocessed %d pages", page_count)
         if output_file:
             output.close()
-            self.logger.info("Saved %d templates to '%s'", len(self.options.templates), output_file)
+            logging.info("Saved %d templates to '%s'", len(self.options.templates), output_file)
 
     @retry(wait_random_min=1000, wait_random_max=20000, stop_max_attempt_number=20)
     def download_dump_file(self):
