@@ -256,7 +256,7 @@ class Project:
         while status != 'post':
             if status == 'error':
                 return
-            self.logger.info("%s: %s. Go to next step.", status, f)
+            #self.logger.info("%s: %s. Go to next step.", status, f)
             print('Call next Processor for ' + status + ' file: ' + f)
             if status == 'init':
                 tmp_status = 'download_started'
@@ -298,7 +298,7 @@ class Project:
         while status != 'preprocessed':
             if status == 'error':
                 return
-            self.logger.info("%s: %s. Go to next step.", status, f)
+            #self.logger.info("%s: %s. Go to next step.", status, f)
             if status == 'init':
                 tmp_status = 'download_started'
             if status == 'downloaded':
