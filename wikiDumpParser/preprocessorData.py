@@ -53,7 +53,7 @@ from types import SimpleNamespace
 
 
 class PreProcessor:
-    def __init__(self, file_name, data_path, base_url, status, start_date, md5, logger):
+    def __init__(self, file_name, data_path, base_url, status, start_date, md5):  #, logger
         self.file_name = file_name
         self.data_path_base = data_path
         self.data_path = os.path.join(self.data_path_base, os.path.splitext(self.file_name)[0])
@@ -63,7 +63,7 @@ class PreProcessor:
         self.status = status
         self.start_date = start_date
         self.md5 = md5
-        self.logger = logger
+        #self.logger = logger
 
         # List of files larger than 10GB.
         # As of 1. March 2018 all of them are outside the scope of the parser and can be ignored.

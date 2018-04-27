@@ -304,7 +304,7 @@ class Project:
                 tmp_status = 'preprocessing_started'
             self.save_tmp_status(f[:-3], tmp_status)
             status = PreProcessor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date'],
-                               self.pinfo['md5'][f], self.logger).preprocess()
+                               self.pinfo['md5'][f]).preprocess()  # , self.logger
             self.save_tmp_status(f[:-3], status)
 
     def createLogger(self, quiet, debug):
