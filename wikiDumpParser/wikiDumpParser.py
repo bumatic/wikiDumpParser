@@ -309,7 +309,7 @@ class Project:
     def createLogger(self, quiet, debug):
         logger = logging.getLogger()
         if not quiet:
-            logging.setLevel(logging.INFO)
+            logger.setLevel(logging.INFO)
         if debug:
             logger.setLevel(logging.DEBUG)
 
