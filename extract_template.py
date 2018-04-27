@@ -442,6 +442,6 @@ createLogger(options.quiet, options.debug)
 #output_path = args.output
 
 #input_file = 'TEMPLATES_enwiki-20161101-pages-meta-history1.xml-p000000010p000002289_out_100Thousand_lines.xml'
-input_file = 'enwiki-20180401-pages-meta-history26.xml-p40558540p40800361'
+input_file = 'enwiki-20180401-pages-meta-history12.xml-p4111770p4170970'
 get_templates(input_file, 'TEMPLATE.xml')
 
