@@ -291,8 +291,7 @@ class Project:
 
         self.update_status()
         self.cleanup()
-        Parallel(n_jobs=self.pinfo['parallel_processes'])\
-            (delayed(self.preprocess_file)(f, status) for f, status in self.pinfo['dump'].items())
+        Parallel(n_jobs=self.pinfo['parallel_processes'])(delayed(self.preprocess_file)(f, status) for f, status in self.pinfo['dump'].items())
 
     def preprocess_file(self, f, status):
         while status != 'preprocessed':
@@ -304,8 +303,7 @@ class Project:
             if status == 'downloaded':
                 tmp_status = 'preprocessing_started'
             self.save_tmp_status(f[:-3], tmp_status)
-            status = PreProcessor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date'],
-                               self.pinfo['md5'][f]).preprocess()  # , self.logger
+            status = PreProcessor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date'], self.pinfo['md5'][f]).preprocess()  # , self.logger
             self.save_tmp_status(f[:-3], status)
 
     def createLogger(self, quiet, debug):
