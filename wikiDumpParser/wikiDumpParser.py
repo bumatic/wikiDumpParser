@@ -43,7 +43,8 @@ class Project:
         if dump_date is not None:
             self.pinfo['dump_date'] = parser.parse(dump_date).timestamp()
         if os.path.exists(self.pinfo_file):
-            print('A project already exists in this location. Try loading or change location for new project.')
+            self.logger.info("A project already exists in '%s'. Try loading this project or "
+                             "change location for new project.", self.path)
         else:
             self.save_project()
 
@@ -53,6 +54,9 @@ class Project:
                 self.pinfo = json.load(info_file)
             info_file.close()
         self.update_status()
+        self.set_logging_level(self.pinfo['logging']['quiet'], self.pinfo['logging']['quiet'])
+
+        #self.logger = self.createLogger(self.pinfo['logging']['quiet'], self.pinfo['logging']['quiet'])
 
     def save_project(self):
         with open(self.pinfo_file, 'w') as info_file:
@@ -185,6 +189,7 @@ class Project:
                     done += 1
                 elif value == 'error':
                     error += 1
+            print('===================================================')
             print('Total number of files to process: '+str(total))
             print('Number of files done: ' + str(done))
             print('Number of files post-processed: ' + str(post))
@@ -247,6 +252,7 @@ class Project:
         while status != 'post':
             if status == 'error':
                 return
+            self.logger.info("%s: %s. Go to next step.", status, f)
             print('Call next Processor for ' + status + ' file: ' + f)
             if status == 'init':
                 tmp_status = 'download_started'
@@ -289,7 +295,7 @@ class Project:
         while status != 'preprocessed':
             if status == 'error':
                 return
-            print('Call next Processor for ' + status + ' file: ' + f)
+            self.logger.info("%s: %s. Go to next step.", status, f)
             if status == 'init':
                 tmp_status = 'download_started'
             if status == 'downloaded':
@@ -316,4 +322,6 @@ class Project:
             self.logger.setLevel(logging.INFO)
         if debug:
             self.logger.setLevel(logging.DEBUG)
+        self.logger.info("Logging level has been set to quiet == '%s' and debug == '%s'", quiet, debug)
+
 
