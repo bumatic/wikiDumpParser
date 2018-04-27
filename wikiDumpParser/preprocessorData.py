@@ -216,7 +216,7 @@ class PreProcessor:
         template_file = os.path.join(self.data_path_base, 'templates', self.file_name[:-3])
         self.load_templates(os.path.join(self.data_path, self.file_name[:-3]), template_file)
         template_load_elapsed = default_timer() - template_load_start
-        self.loggger.info("Loaded %d templates in %.1fs", len(self.options.templates), template_load_elapsed)
+        self.logger.info("Loaded %d templates in %.1fs", len(self.options.templates), template_load_elapsed)
         os.remove(os.path.join(self.data_path, self.file_name[:-3]))
         return True
 
