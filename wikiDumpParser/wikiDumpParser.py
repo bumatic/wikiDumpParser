@@ -1,15 +1,17 @@
 import os
 import json
+import logging
 import pandas as pd
 import shutil
 from dateutil import parser
 from datetime import datetime
+from wikiDumpParser.preprocessorData import *
 from wikiDumpParser.processorData import *
 from wikiDumpParser.processorResults import *
 from joblib import Parallel, delayed
 
 # ToDo: Implement Parsing of Templates and associated Categories
-# ToDo: Implement Parsing of which templates are assigned to 
+# ToDo: Implement Parsing of which templates are assigned to
 class Project:
     def __init__(self, path='project'):
         self.path = path
@@ -22,6 +24,10 @@ class Project:
         self.pinfo['start_date'] = parser.parse('1990-01-01').timestamp()
         self.pinfo['parallel_processes'] = 1
         self.pinfo['templates'] = False
+        self.pinfo['logging'] = {}
+        self.pinfo['logging']['quiet'] = False
+        self.pinfo['logging']['debug'] = False
+        self.logger = self.createLogger(self.pinfo['logging']['quiet'], self.pinfo['logging']['debug'])
 
     def create_project(self, start_date=None, dump_date=None):
         if not os.path.isdir(os.path.join(os.getcwd(), self.path)):
@@ -289,7 +295,25 @@ class Project:
             if status == 'downloaded':
                 tmp_status = 'preprocessing_started'
             self.save_tmp_status(f[:-3], tmp_status)
-            status = Processor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date'],
-                               self.pinfo['md5'][f]).preprocess()
+            status = PreProcessor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date'],
+                               self.pinfo['md5'][f], self.logger).preprocess()
             self.save_tmp_status(f[:-3], status)
+
+    @staticmethod
+    def createLogger(quiet, debug):
+        logger = logging.getLogger()
+        if not quiet:
+            logger.setLevel(logging.INFO)
+        if debug:
+            logger.setLevel(logging.DEBUG)
+        return logger
+
+    def set_logging_level(self, quiet=False, debug=False):
+        self.pinfo['logging']['quiet'] = False
+        self.pinfo['logging']['debug'] = False
+        self.save_project()
+        if not quiet:
+            self.logger.setLevel(logging.INFO)
+        if debug:
+            self.logger.setLevel(logging.DEBUG)
 
