@@ -58,9 +58,7 @@ class Project:
                 self.pinfo = json.load(info_file)
             info_file.close()
         self.update_status()
-        #self.set_logging_level(self.pinfo['logging']['quiet'], self.pinfo['logging']['quiet'])
-
-        #self.logger = self.createLogger(self.pinfo['logging']['quiet'], self.pinfo['logging']['quiet'])
+        self.set_logging_level(self.pinfo['logging']['quiet'], self.pinfo['logging']['quiet'])
 
     def save_project(self):
         with open(self.pinfo_file, 'w') as info_file:
@@ -321,10 +319,10 @@ class Project:
         self.pinfo['logging']['debug'] = debug
         self.save_project()
         if not self.pinfo['logging']['quiet']:
-            #self.logger.setLevel(logging.INFO)
+            self.logger.setLevel(logging.INFO)
             pass
         if self.pinfo['logging']['debug']:
-            #self.logger.setLevel(logging.DEBUG)
+            self.logger.setLevel(logging.DEBUG)
             pass
         #logging.info("Logging level has been set to quiet == '%s' and debug == '%s'", quiet, debug)
 
