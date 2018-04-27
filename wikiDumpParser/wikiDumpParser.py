@@ -46,8 +46,8 @@ class Project:
         if dump_date is not None:
             self.pinfo['dump_date'] = parser.parse(dump_date).timestamp()
         if os.path.exists(self.pinfo_file):
-            #logging.info("A project already exists in '%s'. Try loading this project or "
-            #             "change location for new project.", self.path)
+            logging.info("A project already exists in '%s'. Try loading this project or "
+                         "change location for new project.", self.path)
             pass
         else:
             self.save_project()
