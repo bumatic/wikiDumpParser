@@ -64,6 +64,8 @@ class PreProcessor:
         self.status = status
         self.start_date = start_date
         self.md5 = md5
+        self.logger = logging.getLogger()
+        self.logger.setLevel(logging.INFO)
         #self.logger = logger
 
         # List of files larger than 10GB.
