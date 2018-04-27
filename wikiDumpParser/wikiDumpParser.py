@@ -307,7 +307,7 @@ class Project:
             self.save_tmp_status(f[:-3], status)
 
     def createLogger(self, quiet, debug):
-        print(hier)
+        print('hier')
         logger = logging.getLogger()
         if not quiet:
             logger.setLevel(logging.INFO)
