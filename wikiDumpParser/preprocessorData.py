@@ -218,7 +218,7 @@ class PreProcessor:
         template_file = os.path.join(self.data_path_base, 'templates', self.file_name[:-3])
         self.load_templates(os.path.join(self.data_path, self.file_name[:-3]), template_file)
         template_load_elapsed = default_timer() - template_load_start
-        logging.info("Loaded %d templates in %.1fs" % len(self.options.templates) % template_load_elapsed)
+        logging.info("Loaded %d templates in %.1fs" % len(self.options.templates), template_load_elapsed)
         os.remove(os.path.join(self.data_path, self.file_name[:-3]))
         return True
 
@@ -406,7 +406,7 @@ class PreProcessor:
         self.options.modulePrefix = self.options.moduleNamespace + ':'
 
         output = codecs.open(output_file, 'wb', 'utf-8')
-        logging.debug('Output file %s for template in %s created' % output_file % input_file)
+        logging.debug('Output file %s for template in %s created' % output_file, input_file)
         for page_count, page_data in enumerate(self.pages_from(input)):
             id, revid, title, ns, page = page_data
             if ns in self.templateKeys:
@@ -423,7 +423,7 @@ class PreProcessor:
                     output.write('</page>\n')
             #if page_count and page_count % 1000 == 0:
             if page_count and page_count % 100000 == 0:
-                logging.info("File %s:Preprocessed %d pages" % self.file_name % page_count)
+                logging.info("File %s:Preprocessed %d pages" % self.file_name, page_count)
                 pass
         output.close()
         logging.info("Saved %d templates to '%s'" % len(self.options.templates) % output_file)
