@@ -327,6 +327,7 @@ class Project:
         if self.pinfo['logging']['debug']:
             self.logger.setLevel(logging.DEBUG)
             pass
+        #WHEN THIS LOGGING IS SET THE SCRIPT RESULTS IN A PICKLE ERROR WHY???!!!!
         #logging.info("Logging level has been set to quiet == '%s' and debug == '%s'", quiet, debug)
 
 
