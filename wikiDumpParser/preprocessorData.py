@@ -213,14 +213,13 @@ class PreProcessor:
         :param input_file: wikipedia dump file
         :param template_file: optional file with template definitions.
         """
-
         self.unpack()
         template_load_start = default_timer()
         logging.info("Preprocessing '{0}' to collect template definitions: this may take some time.".format(self.file_name))
         template_file = os.path.join(self.data_path_base, 'templates', self.file_name[:-3])
         self.load_templates(os.path.join(self.data_path, self.file_name[:-3]), template_file)
         template_load_elapsed = default_timer() - template_load_start
-        logging.info("Loaded {0} templates in {1}s".format(len(self.options.templates), .1*template_load_elapsed))
+        logging.info("Preprocessing templates in {1}s".format(len(template_load_elapsed)))
         os.remove(os.path.join(self.data_path, self.file_name[:-3]))
         return True
 
