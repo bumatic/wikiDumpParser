@@ -433,7 +433,7 @@ class PreProcessor:
 
     @retry(wait_random_min=1000, wait_random_max=20000, stop_max_attempt_number=20)
     def download_dump_file(self):
-        logging.info'Start downloading file %s' % self.file_name)
+        logging.info('Start downloading file %s' % self.file_name)
         x = random.randint(1, 120)
         time.sleep(x)
         response = requests.get(self.base_url + self.file_name, stream=True)
