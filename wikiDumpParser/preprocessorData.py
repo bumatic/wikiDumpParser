@@ -201,6 +201,7 @@ class PreProcessor:
             # ONCE IMPLEMENTE NEW_STATUS NEEDS TO BE SET TO NEXT.
             # While not everything is IMPLEMENTED THIS LEADS TO INFINITE LOOP
             success = self.get_templates()
+            print(success)
             if success:
                 new_status = 'preprocessed'
                 return new_status
