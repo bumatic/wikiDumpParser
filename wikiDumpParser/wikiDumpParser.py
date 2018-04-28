@@ -69,6 +69,7 @@ class Project:
     def save_tmp_status(self, filename, status):
         with open(os.path.join(self.tmp_status_path, filename), 'w') as info_file:
             json.dump(status, info_file, sort_keys=True, indent=4)
+        print('file saved')
         return
 
     def update_status(self):
@@ -292,6 +293,7 @@ class Project:
 
         self.update_status()
         self.cleanup()
+
         Parallel(n_jobs=self.pinfo['parallel_processes'])(delayed(self.preprocess_file)(f, status) for f, status in self.pinfo['dump'].items())
 
     def preprocess_file(self, f, status):
