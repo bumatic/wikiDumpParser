@@ -204,6 +204,8 @@ class PreProcessor:
             if success:
                 new_status = 'preprocessed'
                 return new_status
+            else:
+                return 'error'
 
     def get_templates(self):
         #def get_templates(input_file, template_file):
