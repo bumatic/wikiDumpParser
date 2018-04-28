@@ -269,8 +269,9 @@ class Project:
 
             self.save_tmp_status(f[:-3], tmp_status)
 
-            status = Processor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date'],
-                               self.pinfo['md5'][f]).process()
+            processor = Processor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date'], self.pinfo['md5'][f])
+            status = processor.process()
+            del processor
             self.save_tmp_status(f[:-3], status)
 
     def process_results(self):
@@ -303,9 +304,10 @@ class Project:
             if status == 'downloaded':
                 tmp_status = 'preprocessing_started'
             self.save_tmp_status(f[:-3], tmp_status)
-            status = PreProcessor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date'], self.pinfo['md5'][f]).preprocess()  # , self.logger
+            preprocessor = PreProcessor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date'], self.pinfo['md5'][f])
+            status = preprocessor.preprocess()  # , self.logger
+            del preprocessor
             self.save_tmp_status(f[:-3], status)
-
 
     def createLogger(self, quiet, debug):
         self.logger = logging.getLogger()
