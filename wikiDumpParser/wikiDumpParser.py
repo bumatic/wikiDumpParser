@@ -308,7 +308,7 @@ class Project:
             self.save_tmp_status(f[:-3], tmp_status)
             preprocessor = PreProcessor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date'], self.pinfo['md5'][f])
             status = preprocessor.preprocess()  # , self.logger
-            print status
+            print(status)
             del preprocessor
             self.save_tmp_status(f[:-3], status)
         return
