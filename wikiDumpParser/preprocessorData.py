@@ -392,7 +392,7 @@ class PreProcessor:
                 page = []
             last_tag = tag
 
-    def load_templates(self, input_file, output_file=None):
+    def load_templates(self, input_file, output_file):
         """
         Load templates from :param file:.
         :param output_file: file where to save templates and modules.
@@ -406,9 +406,8 @@ class PreProcessor:
         self.options.templatePrefix = self.options.templateNamespace + ':'
         self.options.modulePrefix = self.options.moduleNamespace + ':'
 
-        if output_file:
-            logging.debug('Output file %s for template in %s created', output_file, input_file)
-            output = codecs.open(output_file, 'wb', 'utf-8')
+        output = codecs.open(output_file, 'wb', 'utf-8')
+        logging.debug('Output file %s for template in %s created', output_file, input_file)
         for page_count, page_data in enumerate(self.pages_from(input)):
             id, revid, title, ns, page = page_data
             if ns in self.templateKeys:
@@ -423,13 +422,12 @@ class PreProcessor:
                     for line in page:
                         output.write(line)
                     output.write('</page>\n')
-            if page_count and page_count % 1000 == 0:
-            #if page_count and page_count % 100000 == 0:
-                logging.info("Preprocessed %d pages", page_count)
+            #if page_count and page_count % 1000 == 0:
+            if page_count and page_count % 100000 == 0:
+                logging.info("File %s:Preprocessed %d pages", self.file_name, page_count)
                 pass
-        if output_file:
-            output.close()
-            logging.info("Saved %d templates to '%s'", len(self.options.templates), output_file)
+        output.close()
+        logging.info("Saved %d templates to '%s'", len(self.options.templates), output_file)
 
     @retry(wait_random_min=1000, wait_random_max=20000, stop_max_attempt_number=20)
     def download_dump_file(self):
@@ -461,3 +459,4 @@ class PreProcessor:
     def unpack(self):
         Archive(os.path.join(self.data_path, self.file_name)).extractall(os.path.join(os.getcwd(), self.data_path))
         logging.info("Unpacked file '%s'.", self.file_name)
+
