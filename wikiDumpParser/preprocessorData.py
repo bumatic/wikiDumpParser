@@ -186,7 +186,7 @@ class PreProcessor:
         #quiet = False
         #debug = False
         #self.createLogger(quiet, debug)
-
+        logging.info('Start preprocessing %s.' % self.file_name)
         if self.status == 'init':
             success = self.download_dump_file()
             if success:
