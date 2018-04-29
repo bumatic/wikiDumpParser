@@ -464,4 +464,4 @@ class PreProcessor:
     def unpack(self):
         Archive(os.path.join(self.data_path, self.file_name)).extractall(os.path.join(os.getcwd(), self.data_path))
         logging.info("Unpacked file '{0}'.".format(self.file_name))
-
+        return
