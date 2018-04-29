@@ -69,7 +69,7 @@ class Project:
     def save_tmp_status(self, filename, status):
         with open(os.path.join(self.tmp_status_path, filename), 'w') as info_file:
             json.dump(status, info_file, sort_keys=True, indent=4)
-        print('file saved')
+        print('tmp_file saved')
         return
 
     def update_status(self):
@@ -274,6 +274,7 @@ class Project:
             status = processor.process()
             del processor
             self.save_tmp_status(f[:-3], status)
+        return
 
     def process_results(self):
         ProcessorResults(self).process()
