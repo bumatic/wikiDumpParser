@@ -182,12 +182,8 @@ class PreProcessor:
         #                           1       2              3       4
         self.keyRE = re.compile(r'key="(\d*)"')
 
-
-    # def __init__(self, file_name, data_path, base_url, status, start_date, md5)
-
     def __reduce__(self):
         return self.__class__
-
 
     def preprocess(self):
         #quiet = False
@@ -227,6 +223,7 @@ class PreProcessor:
         template_file = os.path.join(self.data_path_base, 'templates', self.file_name[:-3])
         self.load_templates(os.path.join(self.data_path, self.file_name[:-3]), template_file)
         template_load_elapsed = default_timer() - template_load_start
+        print("{0}: Step done in {1}s".format(self.file_name, template_load_elapsed))
         #logging.info("Preprocessing templates in {0}s".format(template_load_elapsed))
         os.remove(os.path.join(self.data_path, self.file_name[:-3]))
         return True

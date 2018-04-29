@@ -70,7 +70,7 @@ class Project:
     def save_tmp_status(self, filename, status):
         with open(os.path.join(self.tmp_status_path, filename), 'w') as info_file:
             json.dump(status, info_file, sort_keys=True, indent=4)
-        print('tmp_file saved')
+        #print('tmp_file saved')
         return
 
     def update_status(self):
@@ -315,7 +315,7 @@ class Project:
             #print(status)
             del preprocessor
             template_load_elapsed = default_timer() - template_load_start
-            print("{0}: Templates preprocessed in {1}s".format(f, template_load_elapsed))
+            #print("{0}: Step done in {1}s".format(f, template_load_elapsed))
             self.save_tmp_status(f[:-3], status)
             #print('Next is return')
         return
