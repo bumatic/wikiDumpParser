@@ -6,6 +6,7 @@ import shutil
 import logging
 from dateutil import parser
 import dill
+from timeit import default_timer
 
 from datetime import datetime
 from wikiDumpParser.preprocessorData import *
@@ -27,11 +28,11 @@ class Project:
         self.pinfo['start_date'] = parser.parse('1990-01-01').timestamp()
         self.pinfo['parallel_processes'] = 1
         self.pinfo['templates'] = False
-        self.pinfo['logging'] = {}
-        self.pinfo['logging']['quiet'] = False
-        self.pinfo['logging']['debug'] = False
-        self.logger = None
-        self.createLogger(self.pinfo['logging']['quiet'], self.pinfo['logging']['debug'])
+        #self.pinfo['logging'] = {}
+        #self.pinfo['logging']['quiet'] = False
+        #self.pinfo['logging']['debug'] = False
+        #self.logger = None
+        #self.createLogger(self.pinfo['logging']['quiet'], self.pinfo['logging']['debug'])
 
     def create_project(self, start_date=None, dump_date=None):
         if not os.path.isdir(os.path.join(os.getcwd(), self.path)):
@@ -47,8 +48,8 @@ class Project:
         if dump_date is not None:
             self.pinfo['dump_date'] = parser.parse(dump_date).timestamp()
         if os.path.exists(self.pinfo_file):
-            logging.info("A project already exists in '{0}'. Try loading this project or "
-                         "change location for new project.".format(self.path))
+            #logging.info("A project already exists in '{0}'. Try loading this project or "
+            #             "change location for new project.".format(self.path))
             pass
         else:
             self.save_project()
@@ -59,7 +60,7 @@ class Project:
                 self.pinfo = json.load(info_file)
             info_file.close()
         self.update_status()
-        self.set_logging_level(self.pinfo['logging']['quiet'], self.pinfo['logging']['quiet'])
+        #self.set_logging_level(self.pinfo['logging']['quiet'], self.pinfo['logging']['quiet'])
 
     def save_project(self):
         with open(self.pinfo_file, 'w') as info_file:
@@ -301,7 +302,9 @@ class Project:
         while status != 'preprocessed':
             if status == 'error':
                 return
-            logging.info("{0}: {1}. Go to next step.".format(status, f))
+            print("{0}: {1}. Go to next step.".format(status, f))
+            template_load_start = default_timer()
+            #logging.info("{0}: {1}. Go to next step.".format(status, f))
             if status == 'init':
                 tmp_status = 'download_started'
             if status == 'downloaded':
@@ -309,12 +312,19 @@ class Project:
             self.save_tmp_status(f[:-3], tmp_status)
             preprocessor = PreProcessor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date'], self.pinfo['md5'][f])
             status = preprocessor.preprocess()  # , self.logger
-            print(status)
+            #print(status)
             del preprocessor
+            template_load_elapsed = default_timer() - template_load_start
+            print("{0}: Templates preprocessed in {1}s".format(f, template_load_elapsed))
             self.save_tmp_status(f[:-3], status)
-            print('Next is return')
+            #print('Next is return')
         return
 
+
+
+
+
+    '''
     def createLogger(self, quiet, debug):
         self.logger = logging.getLogger()
         if not quiet:
@@ -323,8 +333,9 @@ class Project:
         if debug:
             self.logger.setLevel(logging.DEBUG)
             pass
+    '''
 
-
+    '''
     def set_logging_level(self, quiet=False, debug=False):
         self.pinfo['logging']['quiet'] = quiet
         self.pinfo['logging']['debug'] = debug
@@ -337,5 +348,5 @@ class Project:
             pass
         #WHEN THIS LOGGING IS SET THE SCRIPT RESULTS IN A PICKLE ERROR WHY???!!!!
         #logging.info("Logging level has been set to quiet == '%s' and debug == '%s'", quiet, debug)
-
+    '''
 
