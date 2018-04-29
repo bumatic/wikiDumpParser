@@ -182,6 +182,13 @@ class PreProcessor:
         #                           1       2              3       4
         self.keyRE = re.compile(r'key="(\d*)"')
 
+
+    # def __init__(self, file_name, data_path, base_url, status, start_date, md5)
+
+    def __reduce__(self):
+        return self.__class__, (self.file_name, )
+
+
     def preprocess(self):
         #quiet = False
         #debug = False
