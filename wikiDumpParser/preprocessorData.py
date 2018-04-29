@@ -432,7 +432,7 @@ class PreProcessor:
         output.close()
         logging.info("Saved {0} templates to '{1}'".format(len(self.options.templates), output_file))
         if len(self.options.templates) == 0:
-            os.remove(output)
+            os.remove(output_file)
         return
 
     @retry(wait_random_min=1000, wait_random_max=20000, stop_max_attempt_number=20)
