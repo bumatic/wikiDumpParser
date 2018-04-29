@@ -299,6 +299,7 @@ class PreProcessor:
                 pass
 
             self.options.templates[title] = text
+        return
 
     def pages_from(self, input):
         """
@@ -392,6 +393,7 @@ class PreProcessor:
                 title = None
                 page = []
             last_tag = tag
+        return
 
     def load_templates(self, input_file, output_file):
         """
@@ -429,6 +431,9 @@ class PreProcessor:
                 pass
         output.close()
         logging.info("Saved {0} templates to '{1}'".format(len(self.options.templates), output_file))
+        if len(self.options.templates) == 0:
+            os.remove(output)
+        return
 
     @retry(wait_random_min=1000, wait_random_max=20000, stop_max_attempt_number=20)
     def download_dump_file(self):

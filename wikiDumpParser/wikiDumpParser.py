@@ -312,6 +312,7 @@ class Project:
             print(status)
             del preprocessor
             self.save_tmp_status(f[:-3], status)
+            print('Next is return')
         return
 
     def createLogger(self, quiet, debug):
