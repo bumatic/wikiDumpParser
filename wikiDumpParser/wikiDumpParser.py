@@ -28,11 +28,7 @@ class Project:
         self.pinfo['start_date'] = parser.parse('1990-01-01').timestamp()
         self.pinfo['parallel_processes'] = 1
         self.pinfo['templates'] = False
-        #self.pinfo['logging'] = {}
-        #self.pinfo['logging']['quiet'] = False
-        #self.pinfo['logging']['debug'] = False
-        #self.logger = None
-        #self.createLogger(self.pinfo['logging']['quiet'], self.pinfo['logging']['debug'])
+        self.debug = True
 
     def create_project(self, start_date=None, dump_date=None):
         if not os.path.isdir(os.path.join(os.getcwd(), self.path)):
@@ -48,9 +44,8 @@ class Project:
         if dump_date is not None:
             self.pinfo['dump_date'] = parser.parse(dump_date).timestamp()
         if os.path.exists(self.pinfo_file):
-            #logging.info("A project already exists in '{0}'. Try loading this project or "
-            #             "change location for new project.".format(self.path))
-            pass
+            print("A project already exists in '{0}'. Try loading this project or "
+                  "change location for new project.".format(self.path))
         else:
             self.save_project()
 
@@ -60,7 +55,6 @@ class Project:
                 self.pinfo = json.load(info_file)
             info_file.close()
         self.update_status()
-        #self.set_logging_level(self.pinfo['logging']['quiet'], self.pinfo['logging']['quiet'])
 
     def save_project(self):
         with open(self.pinfo_file, 'w') as info_file:
@@ -70,7 +64,6 @@ class Project:
     def save_tmp_status(self, filename, status):
         with open(os.path.join(self.tmp_status_path, filename), 'w') as info_file:
             json.dump(status, info_file, sort_keys=True, indent=4)
-        #print('tmp_file saved')
         return
 
     def update_status(self):
@@ -164,6 +157,8 @@ class Project:
             download_started = 0
             split = 0
             splitting_started = 0
+            preprocessed = 0
+            preprocessing_started = 0
             parsed = 0
             parsing_started = 0
             post = 0
@@ -182,6 +177,10 @@ class Project:
                     split += 1
                 elif value == 'splitting_started':
                     splitting_started += 1
+                elif value == 'preprocessed':
+                    preprocessed += 1
+                elif value == 'preprocessing_started':
+                    preprocessing_started += 1
                 elif value == 'parsed':
                     parsed += 1
                 elif value == 'parsing_started':
@@ -201,6 +200,8 @@ class Project:
             print('Number of files post-processing started: ' + str(postprocessing_started))
             print('Number of files parsed: ' + str(parsed))
             print('Number of files parsing_started: ' + str(parsing_started))
+            print('Number of files preprocessed: ' + str(preprocessed))
+            print('Number of files preprocessing started: ' + str(preprocessing_started))
             print('Number of files split: ' + str(split))
             print('Number of files splitting started: ' + str(splitting_started))
             print('Number of files downloaded: ' + str(downloaded))
@@ -212,6 +213,7 @@ class Project:
             return
 
     def cleanup(self):
+        #TODO Needs update: Do not roll back to init when postprocessing finished.
         for key, value in self.pinfo['dump'].items():
             if value in ['preprocessing_started','download_started', 'splitting_started', 'parsed_started', 'postprocessing_started']:
                 # remove downloaded file: rest to error
@@ -284,7 +286,7 @@ class Project:
         ProcessorResults(self).combine_old_and_new(path=path, cats=cats, links=links,
                                                    page_info=page_info, revisions=revisions)
 
-    def get_templates(self):
+    def preprocess(self):
         if 'dump' not in self.pinfo.keys():
             print('No dump file info has been added to the project yet – use: '
                   'Project.add_dump_file_info(self, file_list, base_url)')
@@ -292,61 +294,43 @@ class Project:
         if self.pinfo['templates']:
             print('Template files have already been assembled.')
             return
-
         self.update_status()
         self.cleanup()
+        Parallel(n_jobs=self.pinfo['parallel_processes'])(delayed(self.preprocess_file)(f, status)
+                                                          for f, status in self.pinfo['dump'].items())
+        self.handle_preprocessing_results()
 
-        Parallel(n_jobs=self.pinfo['parallel_processes'])(delayed(self.preprocess_file)(f, status) for f, status in self.pinfo['dump'].items())
+    def handle_preprocessing_results(self):
+        self.update_status()
+        preprocessed_all = True
+        for f, status in self.pinfo['dump'].items():
+            if status != 'preprocessed':
+                preprocessed_all == False
+        if preprocessed_all:
+            #TODO: Assembling list of templates and relevant edits needs to be assembled.
+            pass
+            self.cleanup()
+        pass
 
     def preprocess_file(self, f, status):
+        template_load_start = default_timer()
         while status != 'preprocessed':
             if status == 'error':
                 return
-            print("{0}: {1}. Go to next step.".format(status, f))
-            template_load_start = default_timer()
-            #logging.info("{0}: {1}. Go to next step.".format(status, f))
+            if self.debug:
+                print("{0}: {1}. Go to next step.".format(status, f))
             if status == 'init':
                 tmp_status = 'download_started'
-            if status == 'downloaded':
+            elif self.status == 'downloaded':
+                tmp_status = 'splitting_started'
+            elif self.status == 'split':
                 tmp_status = 'preprocessing_started'
             self.save_tmp_status(f[:-3], tmp_status)
-            preprocessor = PreProcessor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date'], self.pinfo['md5'][f])
-            status = preprocessor.preprocess()  # , self.logger
-            #print(status)
+            preprocessor = PreProcessor(f, self.data_path, self.pinfo['base_url'], status,
+                                        self.pinfo['start_date'], self.pinfo['md5'][f], self.debug)
+            status = preprocessor.preprocess()
             del preprocessor
-            template_load_elapsed = default_timer() - template_load_start
-            #print("{0}: Step done in {1}s".format(f, template_load_elapsed))
             self.save_tmp_status(f[:-3], status)
-            #print('Next is return')
+        template_load_elapsed = default_timer() - template_load_start
+        print("{0}: Postprocessing done in {1}s".format(f, template_load_elapsed))
         return
-
-
-
-
-
-    '''
-    def createLogger(self, quiet, debug):
-        self.logger = logging.getLogger()
-        if not quiet:
-            self.logger.setLevel(logging.INFO)
-            pass
-        if debug:
-            self.logger.setLevel(logging.DEBUG)
-            pass
-    '''
-
-    '''
-    def set_logging_level(self, quiet=False, debug=False):
-        self.pinfo['logging']['quiet'] = quiet
-        self.pinfo['logging']['debug'] = debug
-        self.save_project()
-        if not self.pinfo['logging']['quiet']:
-            self.logger.setLevel(logging.INFO)
-            pass
-        if self.pinfo['logging']['debug']:
-            self.logger.setLevel(logging.DEBUG)
-            pass
-        #WHEN THIS LOGGING IS SET THE SCRIPT RESULTS IN A PICKLE ERROR WHY???!!!!
-        #logging.info("Logging level has been set to quiet == '%s' and debug == '%s'", quiet, debug)
-    '''
-
