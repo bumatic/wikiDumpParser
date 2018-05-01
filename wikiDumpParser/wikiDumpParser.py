@@ -28,7 +28,7 @@ class Project:
         self.pinfo['start_date'] = parser.parse('1990-01-01').timestamp()
         self.pinfo['parallel_processes'] = 1
         self.pinfo['templates'] = False
-        self.debug = False
+        self.debug = True
 
     def create_project(self, start_date=None, dump_date=None):
         if not os.path.isdir(os.path.join(os.getcwd(), self.path)):
