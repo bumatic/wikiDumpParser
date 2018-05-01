@@ -321,9 +321,9 @@ class Project:
                 print("{0}: {1}. Go to next step.".format(status, f))
             if status == 'init':
                 tmp_status = 'download_started'
-            elif self.status == 'downloaded':
+            elif status == 'downloaded':
                 tmp_status = 'splitting_started'
-            elif self.status == 'split':
+            elif status == 'split':
                 tmp_status = 'preprocessing_started'
             self.save_tmp_status(f[:-3], tmp_status)
             preprocessor = PreProcessor(f, self.data_path, self.pinfo['base_url'], status,
