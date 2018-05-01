@@ -328,7 +328,7 @@ class Project:
             self.save_tmp_status(f[:-3], tmp_status)
             preprocessor = PreProcessor(f, self.data_path, self.pinfo['base_url'], status,
                                         self.pinfo['start_date'], self.pinfo['md5'][f], self.debug)
-            status = preprocessor.preprocess()
+            status = preprocessor.process()
             del preprocessor
             self.save_tmp_status(f[:-3], status)
         template_load_elapsed = default_timer() - template_load_start

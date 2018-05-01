@@ -59,7 +59,7 @@ class PreProcessor:
         self.keyRE = re.compile(r'key="(\d*)"')
         '''
 
-    def pre_process(self):
+    def process(self):
         if self.debug:
             print('Start pre-processing {0}.'.format(self.file_name))
         if self.status == 'init':
