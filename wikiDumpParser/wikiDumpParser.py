@@ -1,34 +1,24 @@
-from __future__ import unicode_literals, division
 import os
 import json
 import pandas as pd
 import shutil
-import logging
 from dateutil import parser
-import dill
-from timeit import default_timer
-
 from datetime import datetime
-from wikiDumpParser.preprocessorData import *
 from wikiDumpParser.processorData import *
 from wikiDumpParser.processorResults import *
 from joblib import Parallel, delayed
 
-# ToDo: Implement Parsing of Templates and associated Categories
-# ToDo: Implement Parsing of which templates are assigned to
+
 class Project:
     def __init__(self, path='project'):
         self.path = path
         self.data_path = os.path.join(self.path, 'data')
         self.results_path = os.path.join(self.data_path, 'results')
-        self.templates_path = os.path.join(self.data_path, 'templates')
         self.tmp_status_path = os.path.join(self.data_path, 'tmp_status')
         self.pinfo = {}
         self.pinfo_file = os.path.join(self.path, '_project_info.json')
         self.pinfo['start_date'] = parser.parse('1990-01-01').timestamp()
         self.pinfo['parallel_processes'] = 1
-        self.pinfo['templates'] = False
-        self.debug = True
 
     def create_project(self, start_date=None, dump_date=None):
         if not os.path.isdir(os.path.join(os.getcwd(), self.path)):
@@ -37,15 +27,13 @@ class Project:
             os.makedirs(os.path.join(os.getcwd(), self.data_path))
         if not os.path.isdir(os.path.join(os.getcwd(), self.tmp_status_path)):
             os.makedirs(os.path.join(os.getcwd(), self.tmp_status_path))
-        if not os.path.isdir(os.path.join(os.getcwd(), self.templates_path)):
-            os.makedirs(os.path.join(os.getcwd(), self.templates_path))
         if start_date is not None:
             self.pinfo['start_date'] = parser.parse(start_date).timestamp()
         if dump_date is not None:
             self.pinfo['dump_date'] = parser.parse(dump_date).timestamp()
+
         if os.path.exists(self.pinfo_file):
-            print("A project already exists in '{0}'. Try loading this project or "
-                  "change location for new project.".format(self.path))
+            print('A project already exists in this location. Try loading or change location for new project.')
         else:
             self.save_project()
 
@@ -157,8 +145,6 @@ class Project:
             download_started = 0
             split = 0
             splitting_started = 0
-            preprocessed = 0
-            preprocessing_started = 0
             parsed = 0
             parsing_started = 0
             post = 0
@@ -177,10 +163,6 @@ class Project:
                     split += 1
                 elif value == 'splitting_started':
                     splitting_started += 1
-                elif value == 'preprocessed':
-                    preprocessed += 1
-                elif value == 'preprocessing_started':
-                    preprocessing_started += 1
                 elif value == 'parsed':
                     parsed += 1
                 elif value == 'parsing_started':
@@ -193,15 +175,12 @@ class Project:
                     done += 1
                 elif value == 'error':
                     error += 1
-            print('===================================================')
             print('Total number of files to process: '+str(total))
             print('Number of files done: ' + str(done))
             print('Number of files post-processed: ' + str(post))
             print('Number of files post-processing started: ' + str(postprocessing_started))
             print('Number of files parsed: ' + str(parsed))
             print('Number of files parsing_started: ' + str(parsing_started))
-            print('Number of files preprocessed: ' + str(preprocessed))
-            print('Number of files preprocessing started: ' + str(preprocessing_started))
             print('Number of files split: ' + str(split))
             print('Number of files splitting started: ' + str(splitting_started))
             print('Number of files downloaded: ' + str(downloaded))
@@ -213,9 +192,8 @@ class Project:
             return
 
     def cleanup(self):
-        #TODO Needs update: Do not roll back to init when postprocessing finished.
         for key, value in self.pinfo['dump'].items():
-            if value in ['preprocessing_started','download_started', 'splitting_started', 'parsed_started', 'postprocessing_started']:
+            if value in ['download_started', 'splitting_started', 'parsed_started', 'postprocessing_started']:
                 # remove downloaded file: rest to error
                 try:
                     shutil.rmtree(os.path.join(self.data_path, key[:-3]))
@@ -234,7 +212,6 @@ class Project:
             if value == 'error':
                 self.pinfo['dump'][key] = 'init'
                 self.save_project()
-
 
     def process(self):
         '''
@@ -259,11 +236,10 @@ class Project:
         while status != 'post':
             if status == 'error':
                 return
-            #self.logger.info("%s: %s. Go to next step.", status, f)
             print('Call next Processor for ' + status + ' file: ' + f)
             if status == 'init':
                 tmp_status = 'download_started'
-            if status == 'downloaded' or 'preprocessed':
+            if status == 'downloaded':
                 tmp_status = 'splitting_started'
                 # os.path.join(self.data_path, f[:-3])
             if status == 'split':
@@ -273,11 +249,9 @@ class Project:
 
             self.save_tmp_status(f[:-3], tmp_status)
 
-            processor = Processor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date'], self.pinfo['md5'][f])
-            status = processor.process()
-            del processor
+            status = Processor(f, self.data_path, self.pinfo['base_url'], status, self.pinfo['start_date'],
+                               self.pinfo['md5'][f]).process()
             self.save_tmp_status(f[:-3], status)
-        return
 
     def process_results(self):
         ProcessorResults(self).process()
@@ -285,52 +259,3 @@ class Project:
     def combine_old_and_new(self, path=None, cats=None, links=None, page_info=None, revisions=None):
         ProcessorResults(self).combine_old_and_new(path=path, cats=cats, links=links,
                                                    page_info=page_info, revisions=revisions)
-
-    def preprocess(self):
-        if 'dump' not in self.pinfo.keys():
-            print('No dump file info has been added to the project yet – use: '
-                  'Project.add_dump_file_info(self, file_list, base_url)')
-            return
-        if self.pinfo['templates']:
-            print('Template files have already been assembled.')
-            return
-        self.update_status()
-        self.cleanup()
-        Parallel(n_jobs=self.pinfo['parallel_processes'])(delayed(self.preprocess_file)(f, status)
-                                                          for f, status in self.pinfo['dump'].items())
-        self.handle_preprocessing_results()
-
-    def handle_preprocessing_results(self):
-        self.update_status()
-        preprocessed_all = True
-        for f, status in self.pinfo['dump'].items():
-            if status != 'preprocessed':
-                preprocessed_all == False
-        if preprocessed_all:
-            #TODO: Assembling list of templates and relevant edits needs to be assembled.
-            pass
-            self.cleanup()
-        pass
-
-    def preprocess_file(self, f, status):
-        template_load_start = default_timer()
-        while status != 'preprocessed':
-            if status == 'error':
-                return
-            if self.debug:
-                print("{0}: {1}. Go to next step.".format(status, f))
-            if status == 'init':
-                tmp_status = 'download_started'
-            elif status == 'downloaded':
-                tmp_status = 'splitting_started'
-            elif status == 'split':
-                tmp_status = 'preprocessing_started'
-            self.save_tmp_status(f[:-3], tmp_status)
-            preprocessor = PreProcessor(f, self.data_path, self.pinfo['base_url'], status,
-                                        self.pinfo['start_date'], self.pinfo['md5'][f], self.debug)
-            status = preprocessor.process()
-            del preprocessor
-            self.save_tmp_status(f[:-3], status)
-        template_load_elapsed = default_timer() - template_load_start
-        print("{0}: Postprocessing done in {1}s".format(f, template_load_elapsed))
-        return
