@@ -57,6 +57,7 @@ import fileinput
 # import logging
 import re  # TODO use regex when it will be standard
 from timeit import default_timer
+import json
 from html.entities import name2codepoint
 from types import SimpleNamespace
 
@@ -65,6 +66,7 @@ class Processor:
     def __init__(self, file_name, data_path, base_url, status, start_date, md5):
         self.file_name = file_name
         self.data_path_base = data_path
+        self.templates_path = os.path.join(self.data_path_base, 'templates')
         self.data_path = os.path.join(self.data_path_base, os.path.splitext(self.file_name)[0])
         if not os.path.isdir(os.path.join(os.getcwd(), self.data_path)):
             os.makedirs(os.path.join(os.getcwd(), self.data_path))
@@ -116,6 +118,8 @@ class Processor:
         #                           1       2              3       4
         self.keyRE = re.compile(r'key="(\d*)"')
 
+
+    # UPDATED. NEEDS CHECKING
     def process(self):
         if self.status == 'preprocessed':
             success = self.parse()
@@ -129,9 +133,11 @@ class Processor:
             if success:
                 new_status = 'post'
                 return new_status
+
     def unpack(self):
         Archive(os.path.join(self.data_path, self.file_name)).extractall(os.path.join(os.getcwd(), self.data_path))
 
+    #NEEDS UPDATE
     def parse(self):
         results_base = os.path.join(self.data_path_base, 'results')
         if not os.path.isdir(results_base):
@@ -181,6 +187,7 @@ class Processor:
                     pass
         return True
 
+    # NEEDS UPDATE
     def get_data(self, page, cat_results_file, link_results_file):
         page_info = pd.DataFrame(columns=['page_id', 'page_title', 'page_ns', 'date_created'])
         revision_info = pd.DataFrame(columns=['page_id', 'rev_id', 'rev_time', 'rev_author_id'])
@@ -205,6 +212,7 @@ class Processor:
                 page_ns = elem.text
 
         # Get data for revision_info
+        #HANDLING OF START DATE POTENTIALLY NOT CORRECT:INCLUDE THE STATE OF WP AT START DATE ? .
         for revision in page.iterchildren(reversed=False, tag='{http://www.mediawiki.org/xml/export-0.10/}revision'):
             include = False
             for elem in revision.iterchildren(reversed=False, tag=None):
@@ -257,6 +265,7 @@ class Processor:
                 page_info = page_info.append(pd.DataFrame([[page_id, page_title, page_ns, rev_time]],
                                                           columns=['page_id', 'page_title', 'page_ns', 'date_created']))
         return page_info, revision_info, no_text_error, author_info
+
 
     # Returns two lists (cats and links) containing each only links to articles and links to categories
     @staticmethod
@@ -389,3 +398,267 @@ class Processor:
             tmp_data = tmp_data.drop_duplicates()
             results = results.append(tmp_data)
         return results
+
+# ----------------------------------------------------------------------
+
+# TEMPLATE DATA MODEL
+# templates = {
+#   id: {
+#       title: TITLE,
+#       ns: NS,
+#       revisions: [],
+#       timestamp: {
+    #       rev_id:
+    #       rev author,
+    #       text
+    #       123,
+    #       page}}}
+# DEPENDING ON SIZE: CAN BE SPLIT IN SINGLE FILES! PROBABLY BEST
+
+    def process_templates(self):
+        template_info = {}
+
+        for file in glob.glob(self.templates_path+'/*'):
+
+            template_data = {}
+            for event, page in etree.iterparse(file, tag='{http://www.mediawiki.org/xml/export-0.10/}page',
+                                               huge_tree=True):
+                page_title = None
+                page_id = None
+                page_ns = None
+                revisions = []
+                rev_id = None
+                rev_time = None
+                rev_author_name = None
+                rev_author_id = None
+
+                # Get data for page_info
+                for elem in page.iterchildren(reversed=False, tag=None):
+                    if elem.tag == '{http://www.mediawiki.org/xml/export-0.10/}title':
+                        page_title = elem.text
+                        page_title = self.normalizeTitle(page_title)
+                    elif elem.tag == '{http://www.mediawiki.org/xml/export-0.10/}id':
+                        page_id = elem.text
+                    elif elem.tag == '{http://www.mediawiki.org/xml/export-0.10/}ns':
+                        page_ns = elem.text
+
+                # Get data for revision_info
+                # HANDLING OF START DATE FOR TEMPLATES NEEDS TO BE INCLUDED
+                for revision in page.iterchildren(reversed=False,
+                                                  tag='{http://www.mediawiki.org/xml/export-0.10/}revision'):
+                    for elem in revision.iterchildren(reversed=False, tag=None):
+                        if elem.tag == "{http://www.mediawiki.org/xml/export-0.10/}id":
+                            rev_id = elem.text
+                        elif elem.tag == "{http://www.mediawiki.org/xml/export-0.10/}timestamp":
+                            rev_time = elem.text
+                        elif elem.tag == "{http://www.mediawiki.org/xml/export-0.10/}contributor":
+                            for item in elem.iterchildren(reversed=False, tag=None):
+                                if item.tag == "{http://www.mediawiki.org/xml/export-0.10/}username":
+                                    rev_author_name = item.text
+                                elif item.tag == "{http://www.mediawiki.org/xml/export-0.10/}id":
+                                    rev_author_id = item.text
+                        elif elem.tag == "{http://www.mediawiki.org/xml/export-0.10/}text":
+                            # TODO IMPLEMENT SANITY CHECK, E.G.
+                            # # sanity check (empty template, e.g. Template:Crude Oil Prices))
+                            if not elem.text:
+                                continue
+                            rev_text = '' # TODO Implement
+                            # TODO EXPLODE elem.text
+                            pass
+                        else:
+                            pass
+                template_info[page_title] = {
+                    'id': page_id,
+                    'ns': page_ns
+                }
+                template_data[rev_ts] = rev_text
+
+            with open(os.path.join(self.templates_path, page_id+'.json'), 'w') as outfile:
+                json.dump(template_data, outfile)
+
+        with open(os.path.join(self.templates_path, '_template_info.json'), 'w') as outfile:
+            json.dump(template_info, outfile)
+
+                # TODO SAVE STUFF
+
+                # id, title, revision_ts as list
+
+                # Save rev info and author info
+
+                # Save date for template
+
+
+
+                # TODO CHECK IF THIS IS NEEDED SOMEWHERE?!
+                # elem.clear()
+                # while elem.getprevious() is not None:
+                #     del elem.getparent()[0]
+                #os.remove(file)
+        # return True ???
+
+    def preprocess_template_text(self, template):
+        # Extract Template definition
+
+            """
+            Adds a template defined in the :param template:.
+            @see https://en.wikipedia.org/wiki/Help:Template#Noinclude.2C_includeonly.2C_and_onlyinclude
+            """
+
+            # check for redirects
+            m = re.match('#REDIRECT.*?\[\[([^\]]*)]]', template, re.IGNORECASE)
+            if m:
+                # TODO HANDLINGG OF REDIRECTS
+                #options.redirects[title] = m.group(1)  # normalizeTitle(m.group(1))
+                return
+
+            text = self.unescape(template)
+
+            # We're storing template text for future inclusion, therefore,
+            # remove all <noinclude> text and keep all <includeonly> text
+            # (but eliminate <includeonly> tags per se).
+            # However, if <onlyinclude> ... </onlyinclude> parts are present,
+            # then only keep them and discard the rest of the template body.
+            # This is because using <onlyinclude> on a text fragment is
+            # equivalent to enclosing it in <includeonly> tags **AND**
+            # enclosing all the rest of the template body in <noinclude> tags.
+
+            # remove comments
+            text = self.comment.sub('', text)
+
+            # eliminate <noinclude> fragments
+            text = self.reNoinclude.sub('', text)
+
+            # eliminate unterminated <noinclude> elements
+            text = re.sub(r'<noinclude\s*>.*$', '', text, flags=re.DOTALL)
+            text = re.sub(r'<noinclude/>', '', text)
+
+            onlyincludeAccumulator = ''
+            for m in re.finditer('<onlyinclude>(.*?)</onlyinclude>', text, re.DOTALL):
+                onlyincludeAccumulator += m.group(1)
+            if onlyincludeAccumulator:
+                text = onlyincludeAccumulator
+            else:
+                text = reIncludeonly.sub('', text)
+
+            #TODO: RETURNING RESULTS
+            # text: originally stored in options.templates
+
+    @staticmethod
+    def unescape(text):
+
+        """
+        Removes HTML or XML character references and entities from a text string.
+
+        :param text The HTML (or XML) source text.
+        :return The plain text, as a Unicode string, if necessary.
+        """
+
+        def fixup(m):
+            text = m.group(0)
+            code = m.group(1)
+            try:
+                if text[1] == "#":  # character reference
+                    if text[2] == "x":
+                        return chr(int(code[1:], 16))
+                    else:
+                        return chr(int(code))
+                else:  # named entity
+                    return chr(name2codepoint[code])
+            except:
+                return text  # leave as is
+        return re.sub("&#?(\w+);", fixup, text)
+
+
+    #TODO NEEDS TO BE ADAPTED FOR MY SCRIPT
+    def normalizeTitle(self, title):
+        """Normalize title"""
+        # remove leading/trailing whitespace and underscores
+        title = title.strip(' _')
+        # replace sequences of whitespace and underscore chars with a single space
+        title = re.sub(r'[\s_]+', ' ', title)
+
+        m = re.match(r'([^:]*):(\s*)(\S(?:.*))', title)
+        if m:
+            prefix = m.group(1)
+            if m.group(2):
+                optionalWhitespace = ' '
+            else:
+                optionalWhitespace = ''
+            rest = m.group(3)
+
+            ns = normalizeNamespace(prefix)
+            if ns in options.knownNamespaces:
+                # If the prefix designates a known namespace, then it might be
+                # followed by optional whitespace that should be removed to get
+                # the canonical page name
+                # (e.g., "Category:  Births" should become "Category:Births").
+                title = ns + ":" + ucfirst(rest)
+            else:
+                # No namespace, just capitalize first letter.
+                # If the part before the colon is not a known namespace, then we
+                # must not remove the space after the colon (if any), e.g.,
+                # "3001: The_Final_Odyssey" != "3001:The_Final_Odyssey".
+                # However, to get the canonical page name we must contract multiple
+                # spaces into one, because
+                # "3001:   The_Final_Odyssey" != "3001: The_Final_Odyssey".
+                title = ucfirst(prefix) + ":" + optionalWhitespace + ucfirst(rest)
+        else:
+            # no namespace, just capitalize first letter
+            title = ucfirst(title)
+        return title
+
+
+'''
+# Extract Template definition
+def define_template(title, page):
+    """
+    Adds a template defined in the :param page:.
+    @see https://en.wikipedia.org/wiki/Help:Template#Noinclude.2C_includeonly.2C_and_onlyinclude
+    """
+    # title = normalizeTitle(title)
+
+    # sanity check (empty template, e.g. Template:Crude Oil Prices))
+    if not page: return
+
+    # check for redirects
+    m = re.match('#REDIRECT.*?\[\[([^\]]*)]]', page[0], re.IGNORECASE)
+    if m:
+        options.redirects[title] = m.group(1)  # normalizeTitle(m.group(1))
+        return
+
+    text = unescape(''.join(page))
+
+    # We're storing template text for future inclusion, therefore,
+    # remove all <noinclude> text and keep all <includeonly> text
+    # (but eliminate <includeonly> tags per se).
+    # However, if <onlyinclude> ... </onlyinclude> parts are present,
+    # then only keep them and discard the rest of the template body.
+    # This is because using <onlyinclude> on a text fragment is
+    # equivalent to enclosing it in <includeonly> tags **AND**
+    # enclosing all the rest of the template body in <noinclude> tags.
+
+    # remove comments
+    text = comment.sub('', text)
+
+    # eliminate <noinclude> fragments
+    text = reNoinclude.sub('', text)
+    # eliminate unterminated <noinclude> elements
+    text = re.sub(r'<noinclude\s*>.*$', '', text, flags=re.DOTALL)
+    text = re.sub(r'<noinclude/>', '', text)
+
+    onlyincludeAccumulator = ''
+    for m in re.finditer('<onlyinclude>(.*?)</onlyinclude>', text, re.DOTALL):
+        onlyincludeAccumulator += m.group(1)
+    if onlyincludeAccumulator:
+        text = onlyincludeAccumulator
+    else:
+        text = reIncludeonly.sub('', text)
+
+    if text:
+        if title in options.templates:
+            logging.warn('Redefining: %s', title)
+        options.templates[title] = text
+'''
+
+# ----------------------------------------------------------------------
+
