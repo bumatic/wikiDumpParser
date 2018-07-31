@@ -6,3 +6,77 @@
 File missing:
 enwiki-20180301-pages-meta-history9.xml-p2122759p2159112.7z
 
+
+
+
+        # List of files larger than 10GB.
+        # As of 1. March 2018 all of them are outside the scope of the parser and can be ignored.
+        # Automatic handling needs to be implemented.
+        self.ignore = [
+            # TITLE: Wikipedia:Village pump (policy), NS: 4
+            986140,
+            # TITLE: Wikipedia:Administrators' noticeboard/Incidents, NS: 4
+            5137507,
+            # TITLE: Wikipedia:Reference desk/Miscellaneous, NS: 4
+            40297,
+            # TITLE: Template talk:Did you know, NS: 11
+            972034,
+            # TITLE: Wikipedia:Reference desk/Humanities , NS: 4
+            2535875,
+            # TITLE: Wikipedia:Reference desk/Science , NS: 4
+            2535910,
+            # TITLE: Wikipedia talk:Manual of Style , NS: 5
+            75321,
+            # TITLE: Wikipedia:Help desk , NS: 4
+            564696,
+            # TITLE: Wikipedia:Reference desk/Language , NS: 4
+            2515121,
+            # TITLE: Wikipedia talk:Requests for adminship , NS: 5
+            2609426,
+            # TITLE: Wikipedia:Village pump (technical) , NS: 4
+            3252662,
+            # TITLE: Wikipedia:Administrators' noticeboard , NS: 4
+            5149102,
+            # TITLE: Wikipedia:In the news/Candidates , NS: 4
+            1470141,
+            # TITLE: Wikipedia:Administrators' noticeboard/Edit warring , NS: 4
+            3741656,
+            # TITLE: Wikipedia:Good article nominations , NS: 4
+            3514978,
+            # TITLE: Wikipedia:Village pump (proposals) , NS: 4
+            3706897,
+            # TITLE: Wikipedia:Reference desk/Computing , NS: 4
+            6041086,
+            # TITLE: User talk:DGG , NS: 3
+            6905700,
+            # TITLE: Wikipedia:Requested moves/Current discussions (alt) , NS: 4
+            23259666,
+            # TITLE: Wikipedia:Biographies of living persons/Noticeboard , NS: 4
+            6768170,
+            # TITLE: User:COIBot/LinkReports , NS: 2
+            10701605,
+            # TITLE: Wikipedia:Reliable sources/Noticeboard , NS: 4
+            11424955,
+            # TITLE: User talk:Jimbo Wales , NS: 3
+            9870625,
+            # TITLE: Wikipedia:Arbitration/Requests/Enforcement , NS: 4
+            12936136,
+            # TITLE: User talk:ImageTaggingBot/log , NS: 3
+            17820752,
+            # TITLE: Wikipedia:WikiProject Spam/LinkReports , NS: 4
+            16927404,
+            # TITLE: User:JamesR/AdminStats , NS: 2
+            18530389,
+            # TITLE: Template:AFC statistics , NS: 10
+            # 23309859,
+            # TITLE: Wikipedia:Requested moves/Current discussions , NS: 4
+            22998103,
+            # TITLE: User:West.andrew.g/Dead links , NS: 2
+            32101143,
+            # TITLE: User:B-bot/Event log , NS: 2
+            46505226,
+            # TITLE: User:Pentjuuu!.!/sandbox , NS: 2
+            42765277,
+            # TITLE: Wikipedia:Teahouse , NS: 4
+            34745517
+        ]
