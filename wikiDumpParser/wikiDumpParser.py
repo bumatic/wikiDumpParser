@@ -129,12 +129,19 @@ class Project:
         self.pinfo['dump'] = {}
         self.pinfo['md5'] = {}
 
-        for key, value in dump_info['jobs']['metahistory7zdump']['files'].items():
-            if bool(value):
-                self.pinfo['dump'][key] = 'init'
-                self.pinfo['md5'][key] = value['md5']
-        self.save_project()
-        os.remove(os.path.join(os.getcwd(), self.path, dump_info_file))
+        if dump_info['jobs']['metahistory7zdump']['status'] == 'done':
+
+            for key, value in dump_info['jobs']['metahistory7zdump']['files'].items():
+                if bool(value):
+                    self.pinfo['dump'][key] = 'init'
+                    self.pinfo['md5'][key] = value['md5']
+            self.save_project()
+            os.remove(os.path.join(os.getcwd(), self.path, dump_info_file))
+
+        elif dump_info['jobs']['metahistory7zdump']['status'] == 'skipped':
+            print('No 7z history dump generated for the date provided. Please choose another dump.')
+        else:
+            print('Ups. Something went wrong. Please check if the dump contains the history.')
 
     def get_processing_status(self):
         self.update_status()
