@@ -253,6 +253,8 @@ class Project:
                 tmp_status = 'parsing_started'
             if status == 'parsed':
                 tmp_status = 'postprocessing_started'
+            else:
+                tmp_status = 'error'
 
             self.save_tmp_status(f[:-3], tmp_status)
 
