@@ -246,12 +246,12 @@ class Project:
             print('Call next Processor for ' + status + ' file: ' + f)
             if status == 'init':
                 tmp_status = 'download_started'
-            if status == 'downloaded':
+            elif status == 'downloaded':
                 tmp_status = 'splitting_started'
                 # os.path.join(self.data_path, f[:-3])
-            if status == 'split':
+            elif status == 'split':
                 tmp_status = 'parsing_started'
-            if status == 'parsed':
+            elif status == 'parsed':
                 tmp_status = 'postprocessing_started'
             else:
                 tmp_status = 'error'
