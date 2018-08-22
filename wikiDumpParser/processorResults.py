@@ -32,6 +32,8 @@ class ProcessorResults:
                 results = os.path.join(self.project.data_path, 'cats_all.csv')
                 data.to_csv(results, sep='\t', index=False, header=False, mode='a')
                 os.remove(os.path.join(path, f))
+            else:
+                print('Not cat file')
 
     def remove_duplicate_authors(self):
         authors_file = os.path.join(self.project.results_path, 'author_info.csv')
