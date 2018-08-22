@@ -43,7 +43,7 @@ class ProcessorResults:
         relevant_revs_file = os.path.join(self.project.results_path, 'relevant_revisions.csv')
         rev_data_file = os.path.join(self.project.results_path, 'revisions.csv')
         relevant_revs = pd.read_csv(relevant_revs_file, delimiter='\t', names=['rev_id'])
-        rev_data = pd.read_csv(rev_data_file, delimiter='\t', names=['page_id', 'rev_id', 'ts'])
+        rev_data = pd.read_csv(rev_data_file, delimiter='\t', names=['page_id', 'rev_id', 'ts', 'author_id'])
         rev_data = rev_data[rev_data['rev_id'].isin(relevant_revs['rev_id'])].reset_index().drop('index', 1)
         results = os.path.join(self.project.data_path, 'revisions_processed.csv')
         rev_data.to_csv(results, sep='\t', index=False, header=False, mode='w')
