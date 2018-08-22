@@ -26,6 +26,8 @@ class ProcessorResults:
             path = os.path.join(self.project.results_path, key[:-3])
             f = 'cats.csv.7z'
             f = self.unpack(path, f)
+            print(f)
+            print(str(f))
             if os.path.isfile(f):
                 data = pd.read_csv(os.path.join(path, f), header=None, delimiter='\t', na_filter=False)
                 # self.cats = self.cats.append(data)
