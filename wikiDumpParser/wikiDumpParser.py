@@ -265,6 +265,9 @@ class Project:
     def process_results(self):
         ProcessorResults(self).process()
 
+    def process_results2(self):
+        ProcessorResults(self).combine_parsed_results()
+
     def combine_old_and_new(self, path=None, cats=None, links=None, page_info=None, revisions=None):
         ProcessorResults(self).combine_old_and_new(path=path, cats=cats, links=links,
                                                    page_info=page_info, revisions=revisions)

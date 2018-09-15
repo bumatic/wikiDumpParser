@@ -21,6 +21,21 @@ class ProcessorResults:
         self.group_page_info()
         self.remove_duplicate_authors()
 
+        #ToDo Integrate final file handling
+
+    def combine_parsed_results(self, remove=False):
+        print(os.getcwd())
+        print(self.project.data_path)
+
+        # destination = "parsed_results"
+        # os.mkdir(destination)
+
+        # move page_info file
+        # shutil.move(os.path.join(self.project.data_path, 'page_info.csv'), os.path.join(destination, 'page_info.csv'))
+
+        # move revision_info file
+        # shutil.move(os.path.join(self.project.data_path, 'page_info.csv'), os.path.join(destination, 'page_info.csv'))
+
     def assemble_cat_results(self):
         for key, value in tqdm(self.project.pinfo['dump'].items(), desc='Assemble category results in one file:'):
             path = os.path.join(self.project.results_path, key[:-3])
@@ -32,7 +47,7 @@ class ProcessorResults:
                 results = os.path.join(self.project.data_path, 'cats_all.csv')
                 data.to_csv(results, sep='\t', index=False, header=False, mode='a')
                 os.remove(os.path.join(path, f))
-            
+
     def remove_duplicate_authors(self):
         authors_file = os.path.join(self.project.results_path, 'author_info.csv')
         authors = pd.read_csv(authors_file, delimiter='\t', names=['id', 'name'])
