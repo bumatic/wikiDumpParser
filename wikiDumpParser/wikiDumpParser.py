@@ -3,6 +3,7 @@ import json
 import pandas as pd
 import shutil
 from dateutil import parser
+import glob
 from datetime import datetime
 from wikiDumpParser.processorData import *
 from wikiDumpParser.processorResults import *
