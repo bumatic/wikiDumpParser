@@ -32,7 +32,7 @@ class ProcessorResults:
             os.mkdir(destination)
         except:
             pass
-        
+
         # move page_info file
         try:
             shutil.move(os.path.join(self.project.data_path, 'page_info.csv'), os.path.join(destination, 'page_info.csv'))
@@ -59,7 +59,7 @@ class ProcessorResults:
             pass
 
         try:
-            for folder in glob.glob(self.project.path+'/*'):
+            for folder in glob.glob(os.path.join(self.project.path, 'links_all', '*')):
                 print(folder)
         except:
             pass
