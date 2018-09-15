@@ -58,12 +58,15 @@ class ProcessorResults:
         except:
             pass
 
-        # try:
-        links = os.path.join(self.project.path, 'links_all', '*')
-        print(links)
-        for folder in glob.glob(os.path.join(self.project.data_path, 'links_all', '*')):
-            print('hier')
-            print(folder)
+        # move links files
+        links_destination = os.path.join(destination, 'links')
+        try:
+            os.mkdir(links_destination)
+        except:
+            pass
+        try:
+            for folder in glob.glob(os.path.join(self.project.data_path, 'links_all', '*')):
+                print(os.path.split(folder))
         #except:
         #    pass
 
