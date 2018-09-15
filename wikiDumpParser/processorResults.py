@@ -3,7 +3,7 @@ from pyunpack import Archive
 import shutil
 import pandas as pd
 from tqdm import tqdm
-
+from glob import glob
 
 class ProcessorResults:
     def __init__(self, project):
@@ -31,21 +31,35 @@ class ProcessorResults:
         os.mkdir(destination)
 
         # move page_info file
-        shutil.move(os.path.join(self.project.data_path, 'page_info.csv'), os.path.join(destination, 'page_info.csv'))
-
+        try:
+            shutil.move(os.path.join(self.project.data_path, 'page_info.csv'), os.path.join(destination, 'page_info.csv'))
+        except:
+            pass
         # move author_info file
-        shutil.move(os.path.join(self.project.data_path, 'author_info_processed.csv'),
-                    os.path.join(destination, 'author_info.csv'))
+        try:
+            shutil.move(os.path.join(self.project.data_path, 'author_info_processed.csv'),
+                        os.path.join(destination, 'author_info.csv'))
+        except:
+            pass
 
         # move revision file
-        shutil.move(os.path.join(self.project.data_path, 'revisions_processed.csv'), os.path.join(destination, 'revisions.csv'))
+        try:
+            shutil.move(os.path.join(self.project.data_path, 'revisions_processed.csv'), os.path.join(destination, 'revisions.csv'))
+        except:
+            pass
 
         # move cats file
-        shutil.move(os.path.join(self.project.data_path, 'cats_all.csv'),
-                    os.path.join(destination, 'cats.csv'))
+        try:
+            shutil.move(os.path.join(self.project.data_path, 'cats_all.csv'),
+                        os.path.join(destination, 'cats.csv'))
+        except:
+            pass
 
-
-
+        try:
+            for folder in glob(self.project.path+'/*'):
+                print(folder)
+        except:
+            pass
 
     def assemble_cat_results(self):
         for key, value in tqdm(self.project.pinfo['dump'].items(), desc='Assemble category results in one file:'):
