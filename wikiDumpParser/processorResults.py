@@ -61,7 +61,7 @@ class ProcessorResults:
         # try:
         links = os.path.join(self.project.path, 'links_all', '*')
         print(links)
-        for folder in glob.glob(os.path.join(self.project.path, 'links_all', '*')):
+        for folder in glob.glob(os.path.join(self.project.data_path, 'links_all', '*')):
             print('hier')
             print(folder)
         #except:
