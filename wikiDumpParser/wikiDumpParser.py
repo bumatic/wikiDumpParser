@@ -56,7 +56,6 @@ class Project:
         return
 
     def update_status(self):
-        print(glob.__file__)
         for f in glob.glob(self.tmp_status_path + '/*'):
             with open(os.path.join(os.getcwd(), f), 'r') as info_file:
                 status = json.load(info_file)

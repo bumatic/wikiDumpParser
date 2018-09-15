@@ -59,7 +59,10 @@ class ProcessorResults:
             pass
 
         # try:
+        links = os.path.join(self.project.path, 'links_all', '*')
+        print(links)
         for folder in glob.glob(os.path.join(self.project.path, 'links_all', '*')):
+            print('hier')
             print(folder)
         #except:
         #    pass
