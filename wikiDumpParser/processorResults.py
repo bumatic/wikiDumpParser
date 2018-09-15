@@ -58,11 +58,11 @@ class ProcessorResults:
         except:
             pass
 
-        try:
-            for folder in glob.glob(os.path.join(self.project.path, 'links_all', '*')):
-                print(folder)
-        except:
-            pass
+        # try:
+        for folder in glob.glob(os.path.join(self.project.path, 'links_all', '*')):
+            print(folder)
+        #except:
+        #    pass
 
     def assemble_cat_results(self):
         for key, value in tqdm(self.project.pinfo['dump'].items(), desc='Assemble category results in one file:'):
