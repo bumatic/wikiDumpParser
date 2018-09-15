@@ -27,14 +27,25 @@ class ProcessorResults:
         print(os.getcwd())
         print(self.project.data_path)
 
-        # destination = "parsed_results"
-        # os.mkdir(destination)
+        destination = "parsed_results"
+        os.mkdir(destination)
 
         # move page_info file
-        # shutil.move(os.path.join(self.project.data_path, 'page_info.csv'), os.path.join(destination, 'page_info.csv'))
+        shutil.move(os.path.join(self.project.data_path, 'page_info.csv'), os.path.join(destination, 'page_info.csv'))
 
-        # move revision_info file
-        # shutil.move(os.path.join(self.project.data_path, 'page_info.csv'), os.path.join(destination, 'page_info.csv'))
+        # move author_info file
+        shutil.move(os.path.join(self.project.data_path, 'author_info_processed.csv'),
+                    os.path.join(destination, 'author_info.csv'))
+
+        # move revision file
+        shutil.move(os.path.join(self.project.data_path, 'revisions_processed.csv'), os.path.join(destination, 'revisions.csv'))
+
+        # move cats file
+        shutil.move(os.path.join(self.project.data_path, 'cats_all.csv'),
+                    os.path.join(destination, 'cats.csv'))
+
+
+
 
     def assemble_cat_results(self):
         for key, value in tqdm(self.project.pinfo['dump'].items(), desc='Assemble category results in one file:'):
