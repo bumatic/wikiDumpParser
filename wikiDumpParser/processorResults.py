@@ -28,8 +28,11 @@ class ProcessorResults:
         print(self.project.data_path)
 
         destination = "parsed_results"
-        os.mkdir(destination)
-
+        try:
+            os.mkdir(destination)
+        except:
+            pass
+        
         # move page_info file
         try:
             shutil.move(os.path.join(self.project.data_path, 'page_info.csv'), os.path.join(destination, 'page_info.csv'))
