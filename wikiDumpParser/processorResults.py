@@ -3,7 +3,7 @@ from pyunpack import Archive
 import shutil
 import pandas as pd
 from tqdm import tqdm
-from glob import glob
+import glob
 
 class ProcessorResults:
     def __init__(self, project):
@@ -56,7 +56,7 @@ class ProcessorResults:
             pass
 
         try:
-            for folder in glob(self.project.path+'/*'):
+            for folder in glob.glob(self.project.path+'/*'):
                 print(folder)
         except:
             pass

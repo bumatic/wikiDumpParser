@@ -3,7 +3,7 @@ import json
 import pandas as pd
 import shutil
 from dateutil import parser
-from glob import glob
+import glob
 from datetime import datetime
 from wikiDumpParser.processorData import *
 from wikiDumpParser.processorResults import *
@@ -57,7 +57,7 @@ class Project:
 
     def update_status(self):
         print(glob.__file__)
-        for f in glob(self.tmp_status_path + '/*'):
+        for f in glob.glob(self.tmp_status_path + '/*'):
             with open(os.path.join(os.getcwd(), f), 'r') as info_file:
                 status = json.load(info_file)
             self.pinfo['dump'][os.path.basename(f)+'.7z'] = status
