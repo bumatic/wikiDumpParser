@@ -21,67 +21,7 @@ class ProcessorResults:
         self.group_links_files()
         self.group_page_info()
         self.remove_duplicate_authors()
-
-        #ToDo Integrate final file handling
-
-    def combine_parsed_results(self, remove=False):
-        destination = "parsed_results"
-        parsed_files = {}
-
-        parsed_files['page_info'] = 'page_info.csv'
-        parsed_files['author_info'] = 'author_info.csv'
-        parsed_files['revisions'] = 'revisions.csv'
-        parsed_files['cats'] = 'cats.csv'
-
-        try:
-            os.mkdir(destination)
-        except:
-            pass
-
-        # move page_info file
-        try:
-            shutil.move(os.path.join(self.project.data_path, 'page_info.csv'), os.path.join(destination, 'page_info.csv'))
-        except:
-            pass
-        # move author_info file
-        try:
-            shutil.move(os.path.join(self.project.data_path, 'author_info_processed.csv'),
-                        os.path.join(destination, 'author_info.csv'))
-        except:
-            pass
-
-        # move revision file
-        try:
-            shutil.move(os.path.join(self.project.data_path, 'revisions_processed.csv'), os.path.join(destination, 'revisions.csv'))
-        except:
-            pass
-
-        # move cats file
-        try:
-            shutil.move(os.path.join(self.project.data_path, 'cats_all.csv'),
-                        os.path.join(destination, 'cats.csv'))
-        except:
-            pass
-
-        # move links files
-        try:
-            os.rename(os.path.join(self.project.data_path, 'links_all'), os.path.join(self.project.data_path, 'links'))
-            shutil.move(os.path.join(self.project.data_path, 'links'),
-                        os.path.join(destination))
-        except:
-            pass
-
-        try:
-            link_files = []
-            for file in glob.glob(os.path.join(destination, 'links', '*')):
-                f = os.path.split(file)[1]
-                link_files.append(f)
-            parsed_files['links'] = link_files
-        except:
-            pass
-
-        with open(os.path.join(destination, '_project_files.json'), 'w') as outfile:
-            json.dump(parsed_files, outfile)
+        self.combine_parsed_results()
 
     def assemble_cat_results(self):
         for key, value in tqdm(self.project.pinfo['dump'].items(), desc='Assemble category results in one file:'):
@@ -183,3 +123,62 @@ class ProcessorResults:
                 print('New or old revisions file does not exist in the expected location')
         if links is not None:
             print('HANDLING of Links is not yet implemented')
+
+    def combine_parsed_results(self, remove=False):
+        destination = "parsed_results"
+        parsed_files = {}
+
+        parsed_files['page_info'] = 'page_info.csv'
+        parsed_files['author_info'] = 'author_info.csv'
+        parsed_files['revisions'] = 'revisions.csv'
+        parsed_files['cats'] = 'cats.csv'
+
+        try:
+            os.mkdir(destination)
+        except:
+            pass
+
+        # move page_info file
+        try:
+            shutil.move(os.path.join(self.project.data_path, 'page_info.csv'), os.path.join(destination, 'page_info.csv'))
+        except:
+            pass
+        # move author_info file
+        try:
+            shutil.move(os.path.join(self.project.data_path, 'author_info_processed.csv'),
+                        os.path.join(destination, 'author_info.csv'))
+        except:
+            pass
+
+        # move revision file
+        try:
+            shutil.move(os.path.join(self.project.data_path, 'revisions_processed.csv'), os.path.join(destination, 'revisions.csv'))
+        except:
+            pass
+
+        # move cats file
+        try:
+            shutil.move(os.path.join(self.project.data_path, 'cats_all.csv'),
+                        os.path.join(destination, 'cats.csv'))
+        except:
+            pass
+
+        # move links files
+        try:
+            os.rename(os.path.join(self.project.data_path, 'links_all'), os.path.join(self.project.data_path, 'links'))
+            shutil.move(os.path.join(self.project.data_path, 'links'),
+                        os.path.join(destination))
+        except:
+            pass
+
+        try:
+            link_files = []
+            for file in glob.glob(os.path.join(destination, 'links', '*')):
+                f = os.path.split(file)[1]
+                link_files.append(f)
+            parsed_files['links'] = link_files
+        except:
+            pass
+
+        with open(os.path.join(destination, '_project_files.json'), 'w') as outfile:
+            json.dump(parsed_files, outfile)
