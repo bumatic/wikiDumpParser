@@ -4,6 +4,7 @@ import shutil
 import pandas as pd
 from tqdm import tqdm
 import glob
+import json
 
 class ProcessorResults:
     def __init__(self, project):
@@ -24,10 +25,14 @@ class ProcessorResults:
         #ToDo Integrate final file handling
 
     def combine_parsed_results(self, remove=False):
-        print(os.getcwd())
-        print(self.project.data_path)
-
         destination = "parsed_results"
+        parsed_files = {}
+
+        parsed_files['page_info'] = 'page_info.csv'
+        parsed_files['author_info'] = 'author_info.csv'
+        parsed_files['revisions'] = 'revisions.csv'
+        parsed_files['cats'] = 'cats.csv'
+
         try:
             os.mkdir(destination)
         except:
@@ -71,9 +76,12 @@ class ProcessorResults:
             for file in glob.glob(os.path.join(destination, 'links', '*')):
                 f = os.path.split(file)[1]
                 link_files.append(f)
-            print(link_files)
+            parsed_files['links'] = link_files
         except:
             pass
+
+        with open(os.path.join(destination, 'project_files.txt'), 'w') as outfile:
+            json.dump(parsed_files, outfile)
 
     def assemble_cat_results(self):
         for key, value in tqdm(self.project.pinfo['dump'].items(), desc='Assemble category results in one file:'):
