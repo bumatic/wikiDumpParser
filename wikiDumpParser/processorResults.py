@@ -80,7 +80,7 @@ class ProcessorResults:
         except:
             pass
 
-        with open(os.path.join(destination, 'project_files.txt'), 'w') as outfile:
+        with open(os.path.join(destination, '_project_files.json'), 'w') as outfile:
             json.dump(parsed_files, outfile)
 
     def assemble_cat_results(self):
