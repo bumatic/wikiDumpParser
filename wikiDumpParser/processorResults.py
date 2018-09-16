@@ -60,28 +60,21 @@ class ProcessorResults:
 
         # move links files
         try:
-            shutil.move(os.path.join(self.project.data_path, 'links_all'),
-                        os.path.join(destination, 'links'))
+            os.rename(os.path.join(self.project.data_path, 'links_all'), os.path.join(self.project.data_path, 'links'))
+            shutil.move(os.path.join(self.project.data_path, 'links'),
+                        os.path.join(destination))
         except:
             pass
 
-
-
-        '''
-        links_destination = os.path.join(destination, 'links')
         try:
-            os.mkdir(links_destination)
+            link_files = []
+            for file in glob.glob(os.path.join(destination, 'links', '*')):
+                f = os.path.split(file)[1]
+                link_files.append(f)
+            print(link_files)
         except:
             pass
-        try:
-            for file in glob.glob(os.path.join(self.project.data_path, 'links_all', '*')):
-                dest_filename=os.path.split(folder)[1]
-                source_file=self.unpack(folder, 'links.7z')
-                print(os.path.split(folder))
-                #TODO HIER WEITER MACHEN!
-        except:
-            pass
-        '''
+
     def assemble_cat_results(self):
         for key, value in tqdm(self.project.pinfo['dump'].items(), desc='Assemble category results in one file:'):
             path = os.path.join(self.project.results_path, key[:-3])
