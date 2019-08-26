@@ -1,7 +1,7 @@
 from wikiDumpParser.wikiDumpParser import *
 
 dump_status = 'dumpstatus.json'
-url_base = 'https://dumps.wikimedia.org/enwiki/20180701/'
+url_base = 'https://dumps.wikimedia.org/enwiki/20190801/'
 
 project = Project()
 project.create_project(start_date='1990-01-01')
